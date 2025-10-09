@@ -20,8 +20,9 @@ function SearchBar({ onSearch }) {
   };
 
   return (
+    <div className='bg-blue-500 py-3'>
 
-    <form onSubmit={handleSubmit} className='p-1 border-1 w-[80%] mx-auto my-4 flex  items-center gap-2 rounded-sm'>
+    <form onSubmit={handleSubmit} className='p-1 border-1 w-[80%] mx-auto flex  items-center gap-2 rounded-sm bg-white'>
       <input
         type="text"
         placeholder="Tìm kiếm công việc..."
@@ -36,10 +37,11 @@ function SearchBar({ onSearch }) {
         <option value="location">Đà Nẵng</option>
       </select>
 
-      <button type="submit" className="cursor-pointer p-1.5 bg-green-500 rounded-sm">
+      <button type="submit" className="cursor-pointer p-1.5 bg-accent rounded-sm">
         Tìm kiếm
       </button>
     </form>
+    </div>
 
   );
 }

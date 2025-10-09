@@ -71,3 +71,13 @@ button:focus-visible {
 
 
 @import "tailwindcss";
+
+
+@theme {
+  --color-primary: #6439FF;
+  --color-secondary: #4F75FF;
+  --color-accent: #00CCDD;
+  --color-highlight: #7CF5FF;
+
+
+}

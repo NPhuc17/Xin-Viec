@@ -30,7 +30,7 @@ function FeaturedJob() {
         {jobs.map((job) => (
           <div
             key={job.id}
-            className="flex items-center border rounded-md py-4 px-1 bg-white shadow-sm"
+            className="flex items-center border border-accent rounded-md py-4 px-1 bg-white shadow-sm hover:border-highlight"
           >
             <img
               src={job.image}
