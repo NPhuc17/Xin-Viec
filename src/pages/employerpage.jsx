@@ -1,9 +1,10 @@
 import React from 'react'
 import EmployerNavbar from '../components/employernavbar'
-import Navbar from '../components/Navbar'
+import Navbar from '../components/navbar'
 
 
 function Employerpage() {
+    
     return (
         <>
             <EmployerNavbar />

@@ -1,0 +1,160 @@
+[
+  {
+    "id": 1,
+    "title": "Thực tập sinh Marketing",
+    "location": "hcm",
+    "jobType": "partime",
+    "position": "intern",
+    "benefits": [
+      "bhyt",
+      "bonus"
+    ],
+    "experience": "none",
+    "degree": "university",
+    "description": "Thực tập sinh hỗ trợ phòng Marketing, làm việc bán thời gian tại TP HCM.",
+    "detail": {
+      "description": [
+        "Hỗ trợ xây dựng kế hoạch marketing.",
+        "Thực hiện các chiến dịch quảng cáo trên mạng xã hội.",
+        "Phân tích hiệu quả các chiến dịch marketing."
+      ],
+      "requirement": [
+        "Sinh viên năm cuối hoặc mới tốt nghiệp chuyên ngành Marketing, Quản trị kinh doanh hoặc các ngành liên quan.",
+        "Kỹ năng giao tiếp tốt và làm việc nhóm.",
+        "Sử dụng thành thạo các công cụ Microsoft Office và các nền tảng mạng xã hội."
+      ],
+      "benefits": [
+        "Môi trường làm việc năng động, sáng tạo.",
+        "Cơ hội học hỏi và phát triển kỹ năng marketing thực tế.",
+        "Hỗ trợ chi phí đi lại và ăn trưa."
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "title": "Nhân viên Kế toán",
+    "location": "hn",
+    "jobType": "fulltime",
+    "position": "staff",
+    "benefits": [
+      "bhxh",
+      "holiday"
+    ],
+    "experience": "1",
+    "degree": "university",
+    "description": "Nhân viên kế toán làm việc toàn thời gian tại Hà Nội, yêu cầu 1 năm kinh nghiệm.",
+    "detail": {
+      "description": [
+        "Quản lý sổ sách kế toán và báo cáo tài chính.",
+        "Thực hiện các công việc liên quan đến thuế và kiểm toán.",
+        "Hỗ trợ lập ngân sách và dự báo tài chính."
+      ],
+      "requirement": [
+        "Tốt nghiệp đại học chuyên ngành Kế toán, Tài chính hoặc các ngành liên quan.",
+        "Ít nhất 1 năm kinh nghiệm làm việc trong lĩnh vực kế toán.",
+        "Sử dụng thành thạo phần mềm kế toán và Microsoft Excel."
+      ],
+      "benefits": [
+        "Mức lương cạnh tranh và thưởng theo hiệu quả công việc.",
+        "Chế độ bảo hiểm xã hội và nghỉ lễ theo quy định của pháp luật.",
+        "Cơ hội thăng tiến và phát triển nghề nghiệp trong công ty."
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "title": "Nhân viên IT",
+    "location": "dn",
+    "jobType": "fulltime",
+    "position": "staff",
+    "benefits": [
+      "bhyt",
+      "bhxh",
+      "bonus"
+    ],
+    "experience": "2",
+    "degree": "university",
+    "description": "Nhân viên IT phát triển phần mềm, yêu cầu 2 năm kinh nghiệm, làm việc tại Đà Nẵng.",
+    "detail": {
+      "description": [
+        "Phát triển và bảo trì các ứng dụng phần mềm.",
+        "Hỗ trợ kỹ thuật và giải quyết sự cố hệ thống.",
+        "Tham gia vào quá trình thiết kế và triển khai các dự án công nghệ thông tin."
+      ],
+      "requirement": [
+        "Tốt nghiệp đại học chuyên ngành Công nghệ thông tin, Khoa học máy tính hoặc các ngành liên quan.",
+        "Ít nhất 2 năm kinh nghiệm trong lĩnh vực phát triển phần mềm hoặc quản trị hệ thống.",
+        "Thành thạo các ngôn ngữ lập trình như Java, Python, hoặc C# và có kinh nghiệm với cơ sở dữ liệu SQL."
+      ],
+      "benefits": [
+        "Mức lương hấp dẫn và thưởng theo hiệu quả công việc.",
+        "Chế độ bảo hiểm y tế, xã hội đầy đủ theo quy định của pháp luật.",
+        "Môi trường làm việc chuyên nghiệp, sáng tạo và cơ hội phát triển nghề nghiệp."
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "title": "Thực tập sinh Thiết kế",
+    "location": "hcm",
+    "jobType": "partime",
+    "position": "intern",
+    "benefits": [
+      "bonus"
+    ],
+    "experience": "none",
+    "degree": "thpt",
+    "description": "Thực tập sinh thiết kế đồ họa, không yêu cầu kinh nghiệm, làm việc tại TP HCM.",
+    "detail":{
+     "description": [
+        "Phát triển và bảo trì các ứng dụng phần mềm.",
+        "Hỗ trợ kỹ thuật và giải quyết sự cố hệ thống.",
+        "Tham gia vào quá trình thiết kế và triển khai các dự án công nghệ thông tin."
+      ],
+      "requirement": [
+        "Tốt nghiệp đại học chuyên ngành Công nghệ thông tin, Khoa học máy tính hoặc các ngành liên quan.",
+        "Ít nhất 2 năm kinh nghiệm trong lĩnh vực phát triển phần mềm hoặc quản trị hệ thống.",
+        "Thành thạo các ngôn ngữ lập trình như Java, Python, hoặc C# và có kinh nghiệm với cơ sở dữ liệu SQL."
+      ],
+      "benefits": [
+        "Mức lương hấp dẫn và thưởng theo hiệu quả công việc.",
+        "Chế độ bảo hiểm y tế, xã hội đầy đủ theo quy định của pháp luật.",
+        "Môi trường làm việc chuyên nghiệp, sáng tạo và cơ hội phát triển nghề nghiệp."
+      ]
+
+    }
+  },
+  {
+    "id": 5,
+    "title": "Nhân viên Hành chính",
+    "location": "hn",
+    "jobType": "fulltime",
+    "position": "staff",
+    "benefits": [
+      "bhxh",
+      "holiday",
+      "bonus"
+    ],
+    "experience": "5plus",
+    "degree": "postgraduate",
+    "description": "Nhân viên hành chính, yêu cầu trên 5 năm kinh nghiệm, bằng sau đại học.",
+    "detail":{
+     "description": [
+        "Phát triển và bảo trì các ứng dụng phần mềm.",
+        "Hỗ trợ kỹ thuật và giải quyết sự cố hệ thống.",
+        "Tham gia vào quá trình thiết kế và triển khai các dự án công nghệ thông tin."
+      ],
+      "requirement": [
+        "Tốt nghiệp đại học chuyên ngành Công nghệ thông tin, Khoa học máy tính hoặc các ngành liên quan.",
+        "Ít nhất 2 năm kinh nghiệm trong lĩnh vực phát triển phần mềm hoặc quản trị hệ thống.",
+        "Thành thạo các ngôn ngữ lập trình như Java, Python, hoặc C# và có kinh nghiệm với cơ sở dữ liệu SQL."
+      ],
+      "benefits": [
+        "Mức lương hấp dẫn và thưởng theo hiệu quả công việc.",
+        "Chế độ bảo hiểm y tế, xã hội đầy đủ theo quy định của pháp luật.",
+        "Môi trường làm việc chuyên nghiệp, sáng tạo và cơ hội phát triển nghề nghiệp."
+      ]
+
+    }
+  }
+]
