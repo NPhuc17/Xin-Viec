@@ -20,14 +20,14 @@ function SearchBar({ onSearch, className = '', locationOptions = [] }) {
   };
 
   return (
-    <div className={`bg-secondary ${className}`}>
+<div className={`${className ? className : "bg-secondary"}`}>
       <form onSubmit={handleSubmit} className='p-1 border-1 w-[80%] mx-auto flex items-center gap-2 rounded-sm bg-white'>
         <input
           type="text"
           placeholder="Tìm kiếm công việc..."
           value={query}
           onChange={handleInputChange}
-          className="flex-grow p-1 rounded-sm"
+          className="flex-grow p-1 rounded-sm text-black"
         />
        
         <button type="submit" className="cursor-pointer p-1.5 bg-accent rounded-sm">

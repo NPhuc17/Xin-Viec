@@ -1,16 +1,21 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { variables } from "../../variables";
 import { useNavigate } from "react-router-dom";
-
+import Cookies from "js-cookie";
+import Footer from "../../components/footer";
+import EmployerNavbar from "../../components/employernavbar";
 function CompanyPostJob() {
     const navigate = useNavigate();
-    const [userId, setuserId] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+
 
     const [form, setForm] = useState({
         tieuDe: "",
         mieuTa: "",
         daDuyet: false,
-        trangThai: "Đang tuyển",
+        trangThai: "Chờ duyệt",
         yeuCau: "",
         tuoi: "",
         hanNop: "",
@@ -22,8 +27,6 @@ function CompanyPostJob() {
         vitriID: "",
     });
 
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
     const [options, setOptions] = useState({
         loaihinh: [],
         chucdanh: [],
@@ -33,68 +36,34 @@ function CompanyPostJob() {
         vitri: [],
     });
 
-    const [loading, setLoading] = useState(true);
     const [modalMsg, setModalMsg] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState("info");
 
+    // Kiểm tra đăng nhập
     useEffect(() => {
-        const tkId = localStorage.getItem('tkId');
-        const role = localStorage.getItem('role');
-        if (!tkId || role !== 'NhaTuyenDung') {
-            setModalMsg('Bạn cần đăng nhập với tài khoản nhà tuyển dụng để đăng tin.');
-            setModalType('error');
+        const role = localStorage.getItem("role");
+        if (role !== "NhaTuyenDung") {
+            setModalMsg("Bạn cần đăng nhập bằng tài khoản nhà tuyển dụng để đăng tin.");
+            setModalType("error");
             setShowModal(true);
-            setTimeout(() => navigate('/employer/login'), 2000);
+            setTimeout(() => navigate("/employer/login"), 2000);
         } else {
             setIsAuthenticated(true);
         }
     }, [navigate]);
 
-
+    // Lấy dữ liệu dropdown
     useEffect(() => {
         if (!isAuthenticated) return;
-
-        // 🔹 Gọi API lấy thông tin user hiện tại
-        fetch(variables.API_URL + "Register/whoami", {
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-        })
-            .then((res) => {
-                if (!res.ok) throw new Error("Không thể lấy thông tin người dùng.");
-                return res.json();
-            })
-            .then((data) => {
-                if (data && data.userId) {
-                    setuserId(data.userId);
-                }
-            })
-            .catch((err) => {
-                console.error("Lỗi lấy ID người dùng:", err);
-            });
-    }, [isAuthenticated]);
-
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setForm({
-            ...form,
-            [name]: type === "checkbox" ? checked : value,
-        });
-    };
-
-    useEffect(() => {
-        if (!isAuthenticated) return;
-        const fetchOptions = {
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' }
-        };
+        const opts = { credentials: "include" };
         Promise.all([
-            fetch(variables.API_URL + "LoaiHinhLamViec/list", fetchOptions).then((r) => r.json()),
-            fetch(variables.API_URL + "ChucDanh/list", fetchOptions).then((r) => r.json()),
-            fetch(variables.API_URL + "KinhNghiem/list", fetchOptions).then((r) => r.json()),
-            fetch(variables.API_URL + "BangCap/list", fetchOptions).then((r) => r.json()),
-            fetch(variables.API_URL + "LinhVuc/list", fetchOptions).then((r) => r.json()),
-            fetch(variables.API_URL + "ViTri/list", fetchOptions).then((r) => r.json()),
+            fetch(variables.API_URL + "LoaiHinhLamViec/list", opts).then((r) => r.json()),
+            fetch(variables.API_URL + "ChucDanh/list", opts).then((r) => r.json()),
+            fetch(variables.API_URL + "KinhNghiem/list", opts).then((r) => r.json()),
+            fetch(variables.API_URL + "BangCap/list", opts).then((r) => r.json()),
+            fetch(variables.API_URL + "LinhVuc/list", opts).then((r) => r.json()),
+            fetch(variables.API_URL + "ViTri/list", opts).then((r) => r.json()),
         ])
             .then(([loaihinh, chucdanh, kinhnghiem, bangcap, linhvuc, vitri]) => {
                 setOptions({
@@ -108,76 +77,177 @@ function CompanyPostJob() {
                 setLoading(false);
             })
             .catch((err) => {
-                console.error("Lỗi tải dropdown:", err);
+                console.error("Lỗi tải dữ liệu:", err);
                 setLoading(false);
             });
     }, [isAuthenticated]);
 
+    // Cập nhật form
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setForm((prev) => ({
+            ...prev,
+            [name]: type === "checkbox" ? checked : value,
+        }));
+    };
+
+    // Gửi API đăng tin
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+
+    //     // Hàm tiện ích để chuyển đổi giá trị, đảm bảo không phải là NaN
+    //     const safeNumber = (value) => {
+    //         const num = Number(value);
+    //         // Trả về số nếu hợp lệ, ngược lại trả về 0
+    //         return isNaN(num) ? 0 : num;
+    //     };
+
+    //     try {
+    //         const payload = {
+    //             tieuDe: form.tieuDe,
+    //             mieuTa: form.mieuTa,
+    //             daDuyet: false,
+    //             trangThai: form.trangThai,
+    //             // yeuCau, tuoi sử dụng Number() bình thường vì chúng là input number
+    //             yeuCau: Number(form.yeuCau) || 0,
+    //             tuoi: Number(form.tuoi) || 0,
+    //             hanNop: form.hanNop,
+    //             // SỬ DỤNG safeNumber ĐỂ ĐẢM BẢO GIÁ TRỊ LUÔN LÀ SỐ HOẶC 0
+    //             loaihinhID: safeNumber(form.loaihinhID),
+    //             chucdanhID: safeNumber(form.chucdanhID),
+    //             kinhnghiemID: safeNumber(form.kinhnghiemID),
+    //             bangcapID: safeNumber(form.bangcapID),
+    //             linhvucIID: safeNumber(form.linhvucIID),
+    //             vitriID: safeNumber(form.vitriID),
+    //         };
+
+    //         console.log("Payload gửi đi:", payload); // Kiểm tra payload đã sửa
+
+    //         const res = await fetch(variables.API_URL + "TInTuyenDung/add", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             credentials: "include", // gửi cookie JWT
+    //             body: JSON.stringify(payload),
+    //         });
+
+    //         const contentType = res.headers.get("content-type");
+    //         const data = contentType?.includes("application/json")
+    //             ? await res.json()
+    //             : { Message: await res.text() };
+
+    //         if (!res.ok) {
+    //             setModalMsg(data.Message || "Đăng tin thất bại!");
+    //             setModalType("error");
+    //             setShowModal(true);
+    //             return;
+    //         }
+
+    //         setModalMsg(data.Message || "Đăng tin thành công!");
+    //         setModalType("success");
+    //         setShowModal(true);
+    //         setForm({
+    //             tieuDe: "",
+    //             mieuTa: "",
+    //             daDuyet: false,
+    //             trangThai: "Đang tuyển",
+    //             yeuCau: "",
+    //             tuoi: "",
+    //             hanNop: "",
+    //             loaihinhID: "",
+    //             chucdanhID: "",
+    //             kinhnghiemID: "",
+    //             bangcapID: "",
+    //             linhvucIID: "",
+    //             vitriID: "",
+    //         });
+    //     } catch (err) {
+    //         console.error("Submit error:", err);
+    //         setModalMsg("Lỗi kết nối máy chủ!");
+    //         setModalType("error");
+    //         setShowModal(true);
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!isAuthenticated) {
-            setModalMsg('Bạn cần đăng nhập để đăng tin.');
-            setModalType('error');
+
+        const jwt_token = Cookies.get("jwt_token"); // lấy token JWT đã lưu
+
+        if (!jwt_token
+
+        ) {
+            setModalMsg("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
+            setModalType("error");
             setShowModal(true);
+            setTimeout(() => navigate("/employer/login"), 1000);
             return;
         }
+
+        const payload = {
+            tieuDe: form.tieuDe,
+            mieuTa: form.mieuTa,
+            daDuyet: false,
+            trangThai: form.trangThai,
+            yeuCau: form.yeuCau,
+            tuoi: Number(form.tuoi) || 0,
+            hanNop: form.hanNop,
+            loaihinhID: Number(form.loaihinhID) || 0,
+            chucdanhID: Number(form.chucdanhID) || 0,
+            kinhnghiemID: Number(form.kinhnghiemID) || 0,
+            bangcapID: Number(form.bangcapID) || 0,
+            linhvucIID: Number(form.linhvucIID) || 0,
+            vitriID: Number(form.vitriID) || 0,
+        };
+
         try {
             const res = await fetch(variables.API_URL + "TInTuyenDung/add", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json"
+                    "Authorization": `Bearer ${jwt_token}`, // 👈 gửi token kèm header
                 },
-                body: JSON.stringify({
-                    ...form,
-                    ntdid: ntdId, // ✅ thêm ID nhà tuyển dụng
-                }),
-                credentials: "include",
+                body: JSON.stringify(payload),
+                credentials: "include"
             });
 
-            let data;
-            const contentType = res.headers.get('content-type');
-
-            if (contentType && contentType.includes('application/json')) {
-                data = await res.json();
-            } else {
-                const text = await res.text();
-                console.error('Non-JSON response:', text);
-                data = { message: text || 'Lỗi từ máy chủ' };
-            }
+            const data = await res.json();
 
             if (!res.ok) {
-                setModalMsg(data.message || data.Message || "Đăng tin thất bại!");
-                setModalType('error');
+                // Nếu là lỗi validation
+                if (data.errors) {
+                    const allErrors = Object.values(data.errors).flat().join("\n");
+                    setModalMsg(allErrors); // hiện lỗi vào modal
+                } else {
+                    setModalMsg(data.title || "Đăng tin thất bại!");
+                }
+
+                setModalType("error");
                 setShowModal(true);
-            } else {
-                setModalMsg(data.message || data.Message || "Đăng tin thành công!");
-                setModalType('success');
-                setShowModal(true);
-                setTimeout(() => {
-                    setForm({
-                        tieuDe: "",
-                        mieuTa: "",
-                        daDuyet: false,
-                        trangThai: "Đang tuyển",
-                        yeuCau: "",
-                        tuoi: "",
-                        hanNop: "",
-                        loaihinhID: "",
-                        chucdanhID: "",
-                        kinhnghiemID: "",
-                        kinhnghiemID: "",
-                        bangcapID: "",
-                        linhvucIID: "",
-                        vitriID: "",
-                       
-                    });
-                }, 1500);
+                return;
             }
-        } catch (error) {
-            console.error('Submit error:', error);
-            setModalMsg(error.message || "Lỗi kết nối máy chủ!");
-            setModalType('error');
+
+            setModalMsg(data.Message || "Đăng tin thành công!");
+            setModalType("success");
+            setShowModal(true);
+            setForm({
+                tieuDe: "",
+                mieuTa: "",
+                daDuyet: false,
+                trangThai: "Chờ duyệt",
+                yeuCau: "",
+                tuoi: "",
+                hanNop: "",
+                loaihinhID: "",
+                chucdanhID: "",
+                kinhnghiemID: "",
+                bangcapID: "",
+                linhvucIID: "",
+                vitriID: "",
+            });
+        } catch (err) {
+            console.error("Submit error:", err);
+            setModalMsg("Lỗi ", err);
+            setModalType("error");
             setShowModal(true);
         }
     };
@@ -186,218 +256,134 @@ function CompanyPostJob() {
     if (!isAuthenticated) return null;
 
     return (
-        // <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">
-        //     <h2 className="text-2xl font-bold mb-6 text-center">Đăng tin tuyển dụng</h2>
-
-        //     <form onSubmit={handleSubmit} className="space-y-4">
-        //         {/* Tiêu đề */}
-        //         <div>
-        //             <label className="block font-medium mb-1">Tiêu đề công việc</label>
-        //             <input
-        //                 type="text"
-        //                 name="tieuDe"
-        //                 value={form.tieuDe}
-        //                 onChange={handleChange}
-        //                 className="w-full border rounded px-3 py-2"
-        //                 required
-        //             />
-        //         </div>
-
-        //         {/* Miêu tả */}
-        //         <div>
-        //             <label className="block font-medium mb-1">Miêu tả công việc</label>
-        //             <textarea
-        //                 name="mieuTa"
-        //                 value={form.mieuTa}
-        //                 onChange={handleChange}
-        //                 className="w-full border rounded px-3 py-2 h-24"
-        //                 required
-        //             ></textarea>
-        //         </div>
-        //         {/* Yêu cầu */}
-        //         <div>
-        //             <label className="block font-medium mb-1">Yêu cầu công việc</label>
-        //             <textarea
-        //                 name="yeuCau"
-        //                 value={form.yeuCau}
-        //                 onChange={handleChange}
-        //                 className="w-full border rounded px-3 py-2 h-20"
-        //             ></textarea>
-        //         </div>
-
-        //         {/* Tuổi */}
-        //         <div>
-        //             <label className="block font-medium mb-1">Độ tuổi yêu cầu</label>
-        //             <input
-        //                 type="number"
-        //                 name="tuoi"
-        //                 value={form.tuoi}
-        //                 onChange={handleChange}
-        //                 className="w-full border rounded px-3 py-2"
-        //                 placeholder="VD: 22"
-        //             />
-        //         </div>
-
-        //         {/* Hạn nộp */}
-        //         <div>
-        //             <label className="block font-medium mb-1">Hạn nộp hồ sơ</label>
-        //             <input
-        //                 type="date"
-        //                 name="hanNop"
-        //                 value={form.hanNop}
-        //                 onChange={handleChange}
-        //                 className="w-full border rounded px-3 py-2"
-        //                 required
-        //             />
-        //         </div>
-
-        //         {/* Dropdown chọn thông tin */}
-        //         <div className="grid grid-cols-2 gap-4">
-        //             {/* Loại hình */}
-        //             <div>
-        //                 <label className="block font-medium mb-1">Loại hình làm việc</label>
-        //                 <select
-        //                     name="loaihinhID"
-        //                     value={form.loaihinhID}
-        //                     onChange={handleChange}
-        //                     className="w-full border rounded px-3 py-2"
-        //                     required
-        //                 >
-        //                     <option value="">-- Chọn loại hình --</option>
-        //                     {options.loaihinh.map((item) => (
-        //                         <option key={item.lhID} value={item.lhID}>
-        //                             {item.lhName}
-        //                         </option>
-        //                     ))}
-        //                 </select>
-        //             </div>
-
-        //             {/* Chức danh */}
-        //             <div>
-        //                 <label className="block font-medium mb-1">Chức danh</label>
-        //                 <select
-        //                     name="chucdanhID"
-        //                     value={form.chucdanhID}
-        //                     onChange={handleChange}
-        //                     className="w-full border rounded px-3 py-2"
-        //                     required
-        //                 >
-        //                     <option value="">-- Chọn chức danh --</option>
-        //                     {options.chucdanh.map((item) => (
-        //                         <option key={item.cdID} value={item.cdID}>
-        //                             {item.cdName}
-        //                         </option>
-        //                     ))}
-        //                 </select>
-        //             </div>
-
-        //             {/* Kinh nghiệm */}
-        //             <div>
-        //                 <label className="block font-medium mb-1">Kinh nghiệm</label>
-        //                 <select
-        //                     name="kinhnghiemID"
-        //                     value={form.kinhnghiemID}
-        //                     onChange={handleChange}
-        //                     className="w-full border rounded px-3 py-2"
-        //                     required
-        //                 >
-        //                     <option value="">-- Chọn kinh nghiệm --</option>
-        //                     {options.kinhnghiem.map((item) => (
-        //                         <option key={item.knid} value={item.knid}>
-        //                             {item.knName}
-        //                         </option>
-        //                     ))}
-        //                 </select>
-        //             </div>
-
-        //             {/* Bằng cấp */}
-        //             <div>
-        //                 <label className="block font-medium mb-1">Bằng cấp</label>
-        //                 <select
-        //                     name="bangcapID"
-        //                     value={form.bangcapID}
-        //                     onChange={handleChange}
-        //                     className="w-full border rounded px-3 py-2"
-        //                     required
-        //                 >
-        //                     <option value="">-- Chọn bằng cấp --</option>
-        //                     {options.bangcap.map((item) => (
-        //                         <option key={item.bcID} value={item.bcID}>
-        //                             {item.bcName}
-        //                         </option>
-        //                     ))}
-        //                 </select>
-        //             </div>
-
-        //             {/* Lĩnh vực */}
-        //             <div>
-        //                 <label className="block font-medium mb-1">Lĩnh vực</label>
-        //                 <select
-        //                     name="linhvucIID"
-        //                     value={form.linhvucIID}
-        //                     onChange={handleChange}
-        //                     className="w-full border rounded px-3 py-2"
-        //                     required
-        //                 >
-        //                     <option value="">-- Chọn lĩnh vực --</option>
-        //                     {options.linhvuc.map((item) => (
-        //                         <option key={item.lvID} value={item.lvID}>
-        //                             {item.lvName}
-        //                         </option>
-        //                     ))}
-        //                 </select>
-        //             </div>
-
-        //             {/* Vị trí */}
-        //             <div>
-        //                 <label className="block font-medium mb-1">Vị trí</label>
-        //                 <select
-        //                     name="vitriID"
-        //                     value={form.vitriID}
-        //                     onChange={handleChange}
-        //                     className="w-full border rounded px-3 py-2"
-        //                     required
-        //                 >
-        //                     <option value="">-- Chọn vị trí --</option>
-        //                     {options.vitri.map((item) => (
-        //                         <option key={item.vtID} value={item.vtID}>
-        //                             {item.vtName}
-        //                         </option>
-        //                     ))}
-        //                 </select>
-        //             </div>
-        //         </div>
-
-
-        //         {/* Nút submit */}
-        //         <button
-        //             type="submit"
-        //             className="w-full bg-primary text-white py-2 rounded hover:bg-primary/90 transition"
-        //         >
-        //             Đăng tin
-        //         </button>
-        //     </form>
-
-        //     {/* Modal thông báo */}
-        //     {showModal && (
-        //         <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-        //             <div className="bg-white p-6 rounded shadow-lg">
-        //                 <p className={`text-lg mb-4 ${modalType === 'error' ? 'text-red-600' :
-        //                     modalType === 'success' ? 'text-green-600' :
-        //                         'text-gray-700'
-        //                     }`}>{modalMsg}</p>
-        //                 <button
-        //                     onClick={() => setShowModal(false)}
-        //                     className="bg-primary text-white px-4 py-2 rounded"
-        //                 >
-        //                     Đóng
-        //                 </button>
-        //             </div>
-        //         </div>
-        //     )}
-        // </div>
         <>
-            <div>{userId}</div>
+            <EmployerNavbar />
+            <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow">
+                <h2 className="text-2xl font-bold mb-6 text-center">Đăng tin tuyển dụng</h2>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Tiêu đề */}
+                    <div>
+                        <label className="block font-medium mb-1">Tiêu đề công việc</label>
+                        <input
+                            type="text"
+                            name="tieuDe"
+                            value={form.tieuDe}
+                            onChange={handleChange}
+                            className="w-full border rounded px-3 py-2"
+                            required
+                        />
+                    </div>
+
+                    {/* Miêu tả */}
+                    <div>
+                        <label className="block font-medium mb-1">Miêu tả công việc</label>
+                        <textarea
+                            name="mieuTa"
+                            value={form.mieuTa}
+                            onChange={handleChange}
+                            className="w-full border rounded px-3 py-2 h-24"
+                            required
+                        ></textarea>
+                    </div>
+
+                    {/* Yêu cầu */}
+                    <div>
+                        <label className="block font-medium mb-1">Yêu cầu công việc</label>
+                        <textarea
+                            name="yeuCau"
+                            value={form.yeuCau}
+                            onChange={handleChange}
+                            className="w-full border rounded px-3 py-2 h-24"
+                            placeholder="Lương"
+                            required
+                        ></textarea>
+                    </div>
+
+                    {/* Tuổi */}
+                    <div>
+                        <label className="block font-medium mb-1">Độ tuổi yêu cầu</label>
+                        <input
+                            type="number"
+                            name="tuoi"
+                            value={form.tuoi}
+                            onChange={handleChange}
+                            className="w-full border rounded px-3 py-2"
+                        />
+                    </div>
+
+                    {/* Hạn nộp */}
+                    <div>
+                        <label className="block font-medium mb-1">Hạn nộp hồ sơ</label>
+                        <input
+                            type="date"
+                            name="hanNop"
+                            value={form.hanNop}
+                            onChange={handleChange}
+                            className="w-full border rounded px-3 py-2"
+                            required
+                        />
+                    </div>
+
+                    {/* Dropdowns */}
+                    <div className="grid grid-cols-2 gap-4">
+                        {[
+                            ["loaihinhID", "Loại hình làm việc", options.loaihinh, "lhid", "lhName"], // Đã SỬA lhID -> lhid
+                            ["chucdanhID", "Chức danh", options.chucdanh, "cdid", "cdName"], // Đã SỬA cdID -> cdid
+                            ["kinhnghiemID", "Kinh nghiệm", options.kinhnghiem, "knid", "knName"], // ĐÚNG
+                            ["bangcapID", "Bằng cấp", options.bangcap, "bcid", "bcName"], // Đã SỬA bcID -> bcid
+                            ["linhvucIID", "Lĩnh vực", options.linhvuc, "lvid", "lvName"], // Đã SỬA lvID -> lvid
+                            ["vitriID", "Vị trí", options.vitri, "vtid", "vtName"], // Đã SỬA vtID -> vtid
+                        ].map(([name, label, arr, idKey, textKey]) => (
+                            <div key={name}>
+                                <label className="block font-medium mb-1">{label}</label>
+                                <select
+                                    name={name}
+                                    value={form[name]}
+                                    onChange={handleChange}
+                                    className="w-full border rounded px-3 py-2"
+                                    required
+                                >
+                                    <option value="">-- Chọn {label.toLowerCase()} --</option>
+                                    {arr.map((item) => (
+                                        <option key={item[idKey]} value={item[idKey]}>
+                                            {item[textKey]}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        ))}
+                    </div>
+
+                    <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
+                        Đăng tin
+                    </button>
+                </form>
+
+                {showModal && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+                        <div className="bg-white p-6 rounded shadow-lg">
+                            <p
+                                className={`text-lg mb-4 ${modalType === "error"
+                                    ? "text-red-600"
+                                    : modalType === "success"
+                                        ? "text-green-600"
+                                        : "text-gray-700"
+                                    }`}
+                            >
+                                {modalMsg}
+                            </p>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="bg-blue-600 text-white px-4 py-2 rounded"
+                            >
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <Footer />
         </>
     );
 }

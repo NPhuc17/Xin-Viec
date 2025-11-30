@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { variables } from "../../variables";
 import EmployerNavbar from "../../components/employernavbar";
+import Footer from "../../components/footer";
+
 function Company() {
   const API_URL = variables.API_URL + "CongTy/";
   const [companies, setCompanies] = useState([]);
@@ -18,7 +20,10 @@ function Company() {
     logo: "",
   });
   const [editId, setEditId] = useState(null);
-  const [message, setMessage] = useState("");
+
+  // 🔹 Lấy thông tin NTD từ localStorage
+  const storedRole = localStorage.getItem("role");
+  const storedCtID = parseInt(localStorage.getItem("ctID"));
 
   // 🔹 Load danh sách công ty
   const loadData = async () => {
@@ -26,7 +31,7 @@ function Company() {
       const res = await fetch(API_URL + "list");
       const data = await res.json();
       if (res.ok) {
-        setCompanies(data.data || []); // ✅ sửa "Data" → "data"
+        setCompanies(data.data || []);
       } else {
         alert(data.message || "Không thể tải danh sách công ty!");
       }
@@ -39,6 +44,39 @@ function Company() {
   useEffect(() => {
     loadData();
   }, []);
+
+  // 🔹 Upload logo
+  const handleUploadLogo = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch(API_URL + "upload-logo", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      console.log("Response upload:", data); // xem backend trả gì
+
+      if (res.ok && data.url) {   // ✅ chữ thường 'url'
+        setForm(prev => ({ ...prev, logo: data.url }));
+        console.log("Logo mới:", data.url); // ✅ sẽ hiển thị đúng
+        alert("Upload logo thành công!");
+      } else {
+        alert(data.Message || "Upload thất bại!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Lỗi kết nối server!");
+    }
+  };
+
+
+
 
   // 🔹 Thêm / Cập nhật công ty
   const handleSubmit = async (e) => {
@@ -99,6 +137,10 @@ function Company() {
 
   // 🔹 Chọn công ty để chỉnh sửa
   const handleEdit = (ct) => {
+    if (storedRole !== "NhaTuyenDung" || storedCtID !== ct.ctid) {
+      alert("Bạn không có quyền sửa công ty này!");
+      return;
+    }
     setForm({
       ctName: ct.ctName || "",
       diaChi: ct.diaChi || "",
@@ -117,6 +159,11 @@ function Company() {
 
   // 🔹 Xóa công ty
   const handleDelete = async (id) => {
+    if (storedRole !== "NhaTuyenDung" || storedCtID !== id) {
+      alert("Bạn không có quyền xóa công ty này!");
+      return;
+    }
+
     if (!window.confirm("Bạn có chắc muốn xóa công ty này không?")) return;
 
     try {
@@ -134,7 +181,6 @@ function Company() {
     }
   };
 
-  // 🔹 JSX giao diện
   return (
     <>
       <EmployerNavbar />
@@ -210,13 +256,20 @@ function Company() {
             value={form.sdtCongTy}
             onChange={(e) => setForm({ ...form, sdtCongTy: e.target.value })}
           />
-          <input
-            type="text"
-            placeholder="Logo (URL)"
-            className="border p-2 rounded"
-            value={form.logo}
-            onChange={(e) => setForm({ ...form, logo: e.target.value })}
-          />
+
+          {/* Upload Logo */}
+          <div className="col-span-2">
+            <label className="block mb-1 font-medium">Logo công ty</label>
+            <input type="file" accept="image/*" onChange={handleUploadLogo} />
+            {form.logo && (
+              <img
+                src={`${variables.API_URL}CongTy/logo/${form.logo.split("/").pop()}`}
+                alt="Logo"
+                className="w-24 h-24 object-contain mt-2"
+              />
+            )}
+          </div>
+
           <textarea
             placeholder="Miêu tả"
             className="border p-2 rounded col-span-2"
@@ -281,18 +334,24 @@ function Company() {
                   <td className="border p-2">{ct.quocGia || "-"}</td>
                   <td className="border p-2">{ct.nguoiLienHe || "-"}</td>
                   <td className="border p-2 text-center">
-                    <button
-                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
-                      onClick={() => handleEdit(ct)}
-                    >
-                      Sửa
-                    </button>
-                    <button
-                      className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
-                      onClick={() => handleDelete(ct.ctid)}
-                    >
-                      Xóa
-                    </button>
+                    {storedRole === "NhaTuyenDung" && storedCtID === ct.ctid ? (
+                      <>
+                        <button
+                          className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
+                          onClick={() => handleEdit(ct)}
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                          onClick={() => handleDelete(ct.ctid)}
+                        >
+                          Xóa
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-gray-400">Không có quyền</span>
+                    )}
                   </td>
                 </tr>
               ))
@@ -306,6 +365,8 @@ function Company() {
           </tbody>
         </table>
       </div>
+
+      <Footer />
     </>
   );
 }
