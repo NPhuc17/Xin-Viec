@@ -653,7 +653,7 @@ export default function EditResume() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* LEFT */}
             <div className="col-span-1 border-r pr-4  border-dashed border-secondary">
-              <div className="flex flex-col items-center bg-accent/70 h-full">
+              <div className="flex flex-col items-center bg-highlight/70 h-full">
                 <div className="w-40 h-40 bg-gray-200 rounded-full overflow-hidden mb-4">
                   {avatarPreview ? (
                     <img src={avatarPreview} className="w-full h-full object-cover" />

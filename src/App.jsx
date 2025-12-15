@@ -49,6 +49,12 @@ import EditCV from './features/profile/EditResume.jsx';
 import Recommend from './pages/recommend.jsx';
 import AddCertification from './features/profile/AddCertification.jsx';
 import ViewUploadCertification from './features/profile/ViewUploadCertification.jsx';
+import ReportedPage from './pages/reportedpage.jsx';
+import BaoCao from './features/admin/baocao.jsx';
+import BaoCaoChiTiet from './features/admin/BaoCaoChiTiet.jsx';
+import BaoCaoList from './features/admin/baocaolist.jsx';
+import Stats from './pages/stats.jsx';
+import EmpStats from './features/employer/Stats.jsx';
 function App() {
   return (
     <Router>
@@ -64,8 +70,10 @@ function App() {
         <Route path="/saved-jobs" element={<SavedJob />} />
         <Route path="/recommended-jobs" element={<Recommend />} />
         <Route path="/add-certification" element={<AddCertification />} />
+        <Route path="/reported-jobs" element={<ReportedPage />} />
 
         <Route path="/thong-bao" element={<ThongBaoPage />} />
+        <Route path="/stats" element={<Stats />} />
 
 
         {/* <Route path="/job/:id" element={<JobDetailPage />} /> */}
@@ -102,6 +110,9 @@ function App() {
             <Route path="loaihinh" element={<LoaiHinhLamViec />} />
             <Route path="vitri" element={<ViTri />} />
             <Route path="thong-bao" element={<ThongBao />} />
+            <Route path="baocao" element={<BaoCao />} />
+            <Route path="bao-cao/:id" element={<BaoCaoChiTiet />} />
+            <Route path="baocao-khoa" element={<BaoCaoList />} />
           </Route>
         </Route>
 
@@ -113,7 +124,7 @@ function App() {
         <Route path="/applied/:tinId" element={<AppliedCheck />} />
         <Route path="/applied-detail/:utid" element={<AppliedDetail />} />
 
-
+        <Route path="/employer/stats" element={<EmpStats />} />
 
       </Routes>
     </Router>

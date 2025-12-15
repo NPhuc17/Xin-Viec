@@ -4,6 +4,8 @@ import Navbar from "../components/navbar";
 import Cookies from "js-cookie";
 import { variables } from "../variables";
 import Footer from "../components/footer";
+import { MdReportProblem } from "react-icons/md";
+
 
 function Jobdetailpage() {
   const { id } = useParams();
@@ -22,6 +24,16 @@ function Jobdetailpage() {
 
   // State cho yêu thích
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const isLocked = job?.trangThai === "Đã khóa";
+
+
+
+  // State cho báo cáo
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [lyDo, setLyDo] = useState("");
+  const [noiDung, setNoiDung] = useState("");
+  const [hasReported, setHasReported] = useState(false);
 
   // 1️⃣ Load chi tiết tin tuyển dụng
   useEffect(() => {
@@ -82,6 +94,14 @@ function Jobdetailpage() {
     fetchDetails();
   }, [job]);
 
+
+  useEffect(() => {
+    const reported = sessionStorage.getItem(`reported_${id}`);
+    if (reported === "true") {
+      setHasReported(true);
+    }
+  }, [id]);
+
   // 3️⃣ Kiểm tra trạng thái yêu thích
   useEffect(() => {
     const checkFavorite = async () => {
@@ -104,54 +124,112 @@ function Jobdetailpage() {
   }, [id]);
 
   // 4️⃣ Hàm nhấn yêu thích (toggle)
-const handleFavorite = async () => {
-  const token = Cookies.get("jwt_token");
-  if (!token) {
-    alert("Bạn cần đăng nhập để lưu tin yêu thích!");
-    navigate("/login");
-    return;
-  }
+  const handleFavorite = async () => {
+    const token = Cookies.get("jwt_token");
+    if (!token) {
+      alert("Bạn cần đăng nhập để lưu tin yêu thích!");
+      navigate("/login");
+      return;
+    }
 
-  try {
-    if (isFavorite) {
-      // Nếu đang yêu thích -> bỏ yêu thích
-      const res = await fetch(`${variables.API_URL}YeuThich/bo-luu/${job.ttdid}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
+    try {
+      if (isFavorite) {
+        // Nếu đang yêu thích -> bỏ yêu thích
+        const res = await fetch(`${variables.API_URL}YeuThich/bo-luu/${job.ttdid}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setIsFavorite(false);
+          alert(data.Message || "Đã bỏ yêu thích!");
+        } else {
+          alert(data.Message || "Không thể bỏ yêu thích!");
         }
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        setIsFavorite(false);
-        alert(data.Message || "Đã bỏ yêu thích!");
       } else {
-        alert(data.Message || "Không thể bỏ yêu thích!");
+        // Nếu chưa yêu thích -> lưu yêu thích
+        const res = await fetch(`${variables.API_URL}YeuThich/luu-yeu-thich`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ tinTuyenDungId: job.ttdid })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setIsFavorite(true);
+          alert(data.Message || "Đã lưu tin yêu thích!");
+        } else {
+          alert(data.Message || "Không thể lưu tin!");
+        }
       }
-    } else {
-      // Nếu chưa yêu thích -> lưu yêu thích
-      const res = await fetch(`${variables.API_URL}YeuThich/luu-yeu-thich`, {
+    } catch (err) {
+      console.error("Lỗi xử lý yêu thích:", err);
+    }
+  };
+
+
+  const handleReport = async () => {
+    const token = Cookies.get("jwt_token");
+
+    if (!token) {
+      alert("Bạn cần đăng nhập để báo cáo!");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${variables.API_URL}ToCao/to-cao-tin/${job.ttdid}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ tinTuyenDungId: job.ttdid })
+        body: JSON.stringify({
+          lyDo: lyDo,
+          noiDung: noiDung
+        })
       });
 
-      const data = await res.json();
-      if (res.ok) {
-        setIsFavorite(true);
-        alert(data.Message || "Đã lưu tin yêu thích!");
+      // ---- ĐỌC RESPONSE ĐÚNG CÁCH ----
+      const contentType = res.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
       } else {
-        alert(data.Message || "Không thể lưu tin!");
+        data = await res.text(); // backend trả text: "Bạn đã tố cáo tin này rồi"
       }
+
+      // ---- XỬ LÝ KHI LỖI ----
+      if (!res.ok) {
+        alert(data); // hiện đúng thông báo backend
+        return;
+      }
+
+      // ---- THÀNH CÔNG ----
+      alert(data.message || "Gửi báo cáo thành công!");
+
+      setShowReportModal(false);
+      setLyDo("");
+      setNoiDung("");
+
+      // lưu session để disable nút
+      sessionStorage.setItem(`reported_${job.ttdid}`, "true");
+      setHasReported(true);
+
+    } catch (err) {
+      console.error("Lỗi gửi báo cáo:", err);
     }
-  } catch (err) {
-    console.error("Lỗi xử lý yêu thích:", err);
-  }
-};
+  };
+
+
+
 
 
   if (loading) {
@@ -188,12 +266,42 @@ const handleFavorite = async () => {
         {/* Tiêu đề + trái tim */}
         <div className="flex justify-between items-center mb-2">
           <h1 className="text-2xl font-bold text-primary">{job.tieuDe || "Không có tiêu đề"}</h1>
-          <span
-            className="text-2xl cursor-pointer select-none"
-            onClick={handleFavorite}
-          >
-            {isFavorite ? "❤️" : "🤍"}
-          </span>
+
+          {/* <button
+          onClick={() => {
+            if (hasReported) {
+              alert("Bạn đã tố cáo tin này rồi. Không thể tố cáo lại.");
+              return;
+            }
+            setShowReportModal(true);
+          }}
+          disabled={hasReported}
+          className={`bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md mt-4 ml-6 ${hasReported ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+        >
+          {hasReported ? "Đã báo cáo" : "Báo cáo tin này"}
+        </button> */}
+          <div className="flex gap-4 items-center">
+
+            <span onClick={() => {
+              if (hasReported) {
+                alert("Bạn đã tố cáo tin này rồi. Không thể tố cáo lại.");
+                return;
+              }
+              setShowReportModal(true);
+            }}
+              disabled={hasReported}
+              className={` text-red-600 text-2xl cursor-pointer hover:text-red-700 ${hasReported ? "opacity-50 cursor-not-allowed" : ""
+                }`}>
+              <MdReportProblem />
+            </span>
+            <span
+              className="text-2xl cursor-pointer select-none"
+              onClick={handleFavorite}
+            >
+              {isFavorite ? "❤️" : "🤍"}
+            </span>
+          </div>
         </div>
 
         <p className="text-gray-700 mb-4">{job.mieuTa || "Chưa có mô tả."}</p>
@@ -229,16 +337,68 @@ const handleFavorite = async () => {
         </div>
 
         <div>
-          <span className="font-semibold">Yêu cầu:</span> <br/>{job.yeuCau}
+          <span className="font-semibold">Yêu cầu:</span> <br />{job.yeuCau}
         </div>
 
         <button
-          onClick={() => navigate(`/apply/${job.ttdid}`)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md mt-4"
+          onClick={() => {
+            if (isLocked) return;
+            navigate(`/apply/${job.ttdid}`);
+          }}
+          disabled={isLocked}
+          className={`px-6 py-2 rounded-md mt-4 text-white cursor-pointer
+    ${isLocked
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+            }`}
         >
-          Ứng tuyển ngay
+          {isLocked ? "Tin đã bị khóa" : "Ứng tuyển ngay"}
         </button>
+
+
+
       </div>
+      {/* Modal báo cáo */}
+      {showReportModal && (
+        <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-bold mb-4 text-red-600">Báo cáo tin tuyển dụng</h2>
+
+            <label className="block mb-2 font-semibold">Lý do</label>
+            <input
+              type="text"
+              value={lyDo}
+              onChange={(e) => setLyDo(e.target.value)}
+              className="w-full border p-2 rounded mb-4"
+              placeholder="Nhập lý do báo cáo"
+            />
+
+            <label className="block mb-2 font-semibold">Nội dung chi tiết</label>
+            <textarea
+              value={noiDung}
+              onChange={(e) => setNoiDung(e.target.value)}
+              className="w-full border p-2 rounded mb-4 h-24"
+              placeholder="Nhập nội dung báo cáo"
+            ></textarea>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Hủy
+              </button>
+
+              <button
+                onClick={handleReport}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </>

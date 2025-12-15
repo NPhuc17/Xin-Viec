@@ -39,19 +39,20 @@ function EmployerNavbar() {
   return (
     <nav className='flex justify-between items-center p-4 bg-primary relative'>
 
-{/* ====== LEFT ====== */}
-<div className="flex items-center gap-6">
-  {/* LOGO luôn ở bên trái */}
-  <Link to="/employer">
-    <img src={logo} alt="Logo" className='w-15 h-15' />
-  </Link>
+      {/* ====== LEFT ====== */}
+      <div className="flex items-center gap-6">
+        {/* LOGO luôn ở bên trái */}
+        <Link to="/employer">
+          <img src={logo} alt="Logo" className='w-15 h-15' />
+        </Link>
 
-  {/* MENU DESKTOP (bên phải logo) */}
-  <div className="hidden md:flex items-center gap-6">
-    <Link to="/jobcreate" className="text-white hover:text-highlight">Tạo tin tuyển dụng</Link>
-    <Link to="/joblist" className="text-white hover:text-highlight">Danh sách tin tuyển dụng</Link>
-  </div>
-</div>
+        {/* MENU DESKTOP (bên phải logo) */}
+        <div className="hidden md:flex items-center gap-6">
+          <Link to="/jobcreate" className="text-white hover:text-highlight">Tạo tin tuyển dụng</Link>
+          <Link to="/joblist" className="text-white hover:text-highlight">Danh sách tin tuyển dụng</Link>
+          <Link to="/employer/stats" className="text-white hover:text-highlight">Thống kê tin tuyển</Link>
+        </div>
+      </div>
 
       {/* ====== RIGHT DESKTOP ====== */}
       <div className='hidden md:flex flex-row gap-4'>
@@ -65,8 +66,8 @@ function EmployerNavbar() {
                 shadow-lg rounded-md z-50 opacity-0 group-hover:opacity-100 invisible group-hover:visible 
                 transition-all duration-200">
                 <li>
-                  <button 
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100" 
+                  <button
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                     onClick={handleLogout}
                   >
                     Đăng xuất
@@ -125,6 +126,9 @@ function EmployerNavbar() {
 
           <Link to="/joblist" onClick={() => setIsOpen(false)} className="block py-2">
             Danh sách tin tuyển dụng
+          </Link>
+          <Link to="/employer/stats" onClick={() => setIsOpen(false)} className="block py-2">
+            Thống kê tin tuyển
           </Link>
 
           <Link to="/employer/company" onClick={() => setIsOpen(false)} className="block py-2">

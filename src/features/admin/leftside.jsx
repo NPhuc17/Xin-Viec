@@ -183,6 +183,8 @@ function Leftside() {
       <NavLink to="/admin/kinhnghiem" className={({ isActive }) => isActive ? "text-accent" : "hover:text-highlight"}>Quản lý kinh nghiệm</NavLink>
       <NavLink to="/admin/loaihinh" className={({ isActive }) => isActive ? "text-accent" : "hover:text-highlight"}>Quản lý loại hình làm việc</NavLink>
       <NavLink to="/admin/vitri" className={({ isActive }) => isActive ? "text-accent" : "hover:text-highlight"}>Quản lý vị trí việc làm</NavLink>
+      <NavLink to="/admin/baocao" className={({ isActive }) => isActive ? "text-accent" : "hover:text-highlight"}>Danh sách báo cáo</NavLink>
+      <NavLink to="/admin/baocao-khoa" className={({ isActive }) => isActive ? "text-accent" : "hover:text-highlight"}>Danh sách tin đã khoá</NavLink>
 
       {/* 🔔 Thông báo */}
       <NavLink

@@ -608,6 +608,8 @@ function PDFViewerWithAuth({ pdfUrl }) {
   const [error, setError] = useState(null);
   const abortRef = useRef(null);
 
+
+
   useEffect(() => {
     abortRef.current = new AbortController();
     const signal = abortRef.current.signal;
@@ -663,6 +665,11 @@ function AppliedDetail() {
   const [linhVucList, setLinhVucList] = useState([]);
   const [viTriList, setViTriList] = useState([]);
   const [kinhNghiemList, setKinhNghiemList] = useState([]);
+
+
+const [showInterviewModal, setShowInterviewModal] = useState(false);
+const [emailContent, setEmailContent] = useState("");
+
 
   // Load dropdown lists
   useEffect(() => {
@@ -789,8 +796,14 @@ function AppliedDetail() {
         <div className="flex gap-3 mb-6">
           <button disabled={updating} onClick={() => updateStatus("Đã xem")}
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Đã xem</button>
-          <button disabled={updating} onClick={() => updateStatus("Phỏng vấn")}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Mời phỏng vấn</button>
+          <button
+            disabled={updating}
+            onClick={() => setShowInterviewModal(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Mời phỏng vấn
+          </button>
+
           <button disabled={updating} onClick={() => updateStatus("Từ chối")}
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Từ chối</button>
         </div>
@@ -805,7 +818,7 @@ function AppliedDetail() {
             <p><strong>SĐT:</strong> {thongTinCaNhan.sdt}</p>
             <p><strong>Email:</strong> {thongTinCaNhan.email}</p>
             <p><strong>CCCD:</strong> {thongTinCaNhan.cccd}</p>
-            <p><strong>Địa chỉ:</strong> {thongTinCaNhan.diaChi}</p>
+            <p><strong>Địa chỉ:</strong> {thongTinCaNhan.diaChi + ", "+ thongTinCaNhan.huyen + ", " + thongTinCaNhan.tinh}</p>
             <p><strong>Nơi sinh:</strong> {thongTinCaNhan.noiSinh}</p>
           </div>
         </div>
@@ -881,7 +894,7 @@ function AppliedDetail() {
               {/* Form mẫu */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="col-span-1 border-r pr-4 text-base border-secondary border-dashed">
-                  <div className="flex flex-col bg-highlight/70 h-full">
+                  <div className="flex flex-col bg-highlight/70 h-full p-5">
                     <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden mb-4 mx-auto">
                       {hoSoChiTiet.avata ? (
                         <img
@@ -895,23 +908,23 @@ function AppliedDetail() {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center my-3">
                       <MdDriveFileRenameOutline className="mr-2 text-accent" />
                       <p className="font-semibold">{hoSoChiTiet.tenUngVien || "—"}</p>
                     </div>
 
-                    <div className="flex items-center">
+                    <div className="flex items-center my-3">
                       <FaPhone className="mr-2 text-accent" />
                       <p className=" ">{hoSoChiTiet.phoneHoSo || "—"}</p>
                     </div>
 
-                    <div className="flex items-center">
+                    <div className="flex items-center my-3">
                       <CiMail className="mr-2 text-accent" />
-                      <p className=" text-[14px]">{hoSoChiTiet.mailHoSo || "—"}</p>
+                      <p className=" text-[14px] break-all">{hoSoChiTiet.mailHoSo || "—"}</p>
                     </div>
 
 
-                    <div className="my-2">
+                    <div className="my-4">
                       <strong className="p-1 pr-10 bg-accent rounded-[8px] text-white uppercase">Kỹ năng</strong>
                       <div className="h-[2px] w-full bg-accent mt-1"></div>
 
@@ -933,14 +946,14 @@ function AppliedDetail() {
                     <p>{hoSoChiTiet.hocVan || "—"}</p>
                   </div>
 
-                  <div className="my-4">
+                  {/* <div className="my-4">
                     <strong className="p-1 pr-10 bg-accent rounded-[8px] text-white uppercase">Năm kinh nghiệm</strong>
                     <div className="h-[2px] w-full bg-accent mt-1"></div>
                     <p>{hoSoChiTiet.namKinhNghiemID || "—"}</p>
-                  </div>
+                  </div> */}
 
                   <div className="my-4">
-                    <strong className="p-1 pr-10 bg-accent rounded-[8px] text-white uppercase">Học vấn</strong>
+                    <strong className="p-1 pr-10 bg-accent rounded-[8px] text-white uppercase">Năm kinh nghiệm</strong>
                     <div className="h-[2px] w-full bg-accent mt-1"></div>
                     <p>{getName(kinhNghiemList, hoSoChiTiet.namKinhNghiemID)}</p>
                   </div>
@@ -1017,6 +1030,75 @@ function AppliedDetail() {
 
       </div>
       <Footer />
+{showInterviewModal && (
+  <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded shadow-lg w-full max-w-lg">
+      <h3 className="text-xl font-bold mb-4">Gửi email mời phỏng vấn</h3>
+      <textarea
+        className="w-full border p-2 rounded mb-4"
+        rows={6}
+        placeholder="Nhập nội dung email..."
+        value={emailContent}
+        onChange={(e) => setEmailContent(e.target.value)}
+      />
+
+      <div className="flex justify-end gap-2">
+        <button
+          className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+          onClick={() => {
+            setShowInterviewModal(false);
+            setEmailContent("");
+          }}
+        >
+          Hủy
+        </button>
+        <button
+          className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+          onClick={async () => {
+            if (!emailContent.trim()) {
+              alert("Vui lòng nhập nội dung email!");
+              return;
+            }
+            setUpdating(true);
+            try {
+              const token = Cookies.get("jwt_token");
+              const res = await fetch(`${variables.API_URL}TInTuyenDung/cap-nhat-trang-thai/${utid}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  TrangThai: "Phỏng vấn",
+                  noiDungEmail: emailContent,
+                }),
+              });
+              const text = await res.text();
+              let dataRes = null;
+              try { dataRes = JSON.parse(text); } catch {}
+              if (res.ok) {
+                alert("✅ " + (dataRes?.Message || "Đã gửi email mời phỏng vấn!"));
+                setData(prev => ({ ...prev, trangThai: "Phỏng vấn" }));
+                setShowInterviewModal(false);
+                setEmailContent("");
+              } else {
+                alert("❌ " + (dataRes?.message || text));
+              }
+            } catch (err) {
+              console.error(err);
+              alert("⚠️ Lỗi máy chủ hoặc kết nối!");
+            } finally {
+              setUpdating(false);
+            }
+          }}
+        >
+          Gửi
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </>
   );
 }

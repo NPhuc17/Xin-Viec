@@ -56,12 +56,23 @@ function Navbar() {
               <li><Link to="/saved-jobs" className="block px-4 py-2 hover:bg-gray-100">Việc làm đã lưu</Link></li>
               <li><Link to="/applied-jobs" className="block px-4 py-2 hover:bg-gray-100">Việc làm đã ứng tuyển</Link></li>
               <li><Link to="/recommended-jobs" className="block px-4 py-2 hover:bg-gray-100">Việc làm phù hợp</Link></li>
+              <li><Link to="/reported-jobs" className="block px-4 py-2 hover:bg-gray-100">Việc làm đã tố cáo</Link></li>
+
+
             </ul>
           </div>
 
           <ul className='text-white hover:text-highlight'>
             <Link to="/profile">Tạo hồ sơ</Link>
           </ul>
+
+          <ul className='text-white hover:text-highlight'>
+            <Link to="/personal-info">Thông tin cá nhân</Link>
+          </ul>
+          <ul className='text-white hover:text-highlight'>
+            <Link to="/stats">Thống kê ứng tuyển</Link>
+          </ul>
+
         </div>
       </div>
 
@@ -76,7 +87,7 @@ function Navbar() {
               </button>
               <ul className="absolute top-full right-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg rounded-md z-50 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
                 <li><button className="block w-full text-left px-4 py-2 hover:bg-gray-100" onClick={handleLogout}>Đăng xuất</button></li>
-                <li><button className="block w-full text-left px-4 py-2 hover:bg-gray-100" onClick={() => navigate("/personal-info")}>Thông tin cá nhân</button></li>
+
               </ul>
             </>
           ) : (
@@ -96,88 +107,96 @@ function Navbar() {
       </div>
 
       {/* ====== MOBILE TOP BAR ====== */}
-<div className="md:hidden flex items-center justify-between w-full">
+      <div className="md:hidden flex items-center justify-between w-full">
 
-  {/* BÊN TRÁI: Đăng nhập / Xin chào */}
-  <div className="text-white text-lg ml-5">
-    {username ? (
-      <span className="text-accent">{username}</span>
-    ) : (
-      <Link to="/login" className="hover:text-highlight">
-        Đăng nhập/Đăng ký
-      </Link>
-    )}
-  </div>
+        {/* BÊN TRÁI: Đăng nhập / Xin chào */}
+        <div className="text-white text-lg ml-5">
+          {username ? (
+            <span className="text-accent">{username}</span>
+          ) : (
+            <Link to="/login" className="hover:text-highlight">
+              Đăng nhập/Đăng ký
+            </Link>
+          )}
+        </div>
 
-  {/* BÊN PHẢI: Chuông + Hamburger */}
-  <div className="flex items-center gap-4">
-    <button
-      className="text-white text-2xl"
-      onClick={() => setIsOpen(!isOpen)}
-    >
-      {isOpen ? <FaTimes /> : <FaBars />}
-    </button>
-    <NotificationBell logoutSignal={username === ''} />
+        {/* BÊN PHẢI: Chuông + Hamburger */}
+        <div className="flex items-center gap-4">
+          <button
+            className="text-white text-2xl"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <FaTimes /> : <FaBars />}
+          </button>
+          <NotificationBell logoutSignal={username === ''} />
 
-  </div>
+        </div>
 
-</div>
+      </div>
 
 
       {/* ====== MOBILE MENU ====== */}
       {isOpen && (
-  <div className="absolute top-full left-0 w-full bg-primary text-white flex flex-col gap-2 p-5 md:hidden shadow-lg z-50">
+        <div className="absolute top-full left-0 w-full bg-primary text-white flex flex-col gap-2 p-5 md:hidden shadow-lg z-50">
 
-    <Link to="/search" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
-      Tìm kiếm việc làm
-    </Link>
+          <Link to="/search" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+            Tìm kiếm việc làm
+          </Link>
 
-    <Link to="/saved-jobs" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
-      Việc làm đã lưu
-    </Link>
+          <Link to="/saved-jobs" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+            Việc làm đã lưu
+          </Link>
 
-    <Link to="/applied-jobs" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
-      Việc làm đã ứng tuyển
-    </Link>
+          <Link to="/applied-jobs" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+            Việc làm đã ứng tuyển
+          </Link>
 
-    <Link to="/recommended-jobs" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
-      Việc làm phù hợp
-    </Link>
+          <Link to="/recommended-jobs" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+            Việc làm phù hợp
+          </Link>
 
-    <Link to="/profile" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
-      Tạo hồ sơ
-    </Link>
+          <Link to="/reported-jobs" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+            Việc đã tố cáo
+          </Link>
 
-    {username ? (
-      <>
-        <button 
-          onClick={() => { handleLogout(); setIsOpen(false); }} 
-          className="block w-full text-left py-2"
-        >
-          Đăng xuất
-        </button>
+          <Link to="/profile" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+            Tạo hồ sơ
+          </Link>
 
-        <button 
-          onClick={() => { navigate("/personal-info"); setIsOpen(false); }} 
-          className="block w-full text-left py-2"
-        >
-          Thông tin cá nhân
-        </button>
-      </>
-    ) : (
-      <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
-        Đăng nhập/Đăng ký
-      </Link>
-    )}
+           <Link to="/stats" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+            Thống kê ứng tuyển
+          </Link>
 
-    <Link to="/employer" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
-      Cho nhà tuyển dụng
-    </Link>
+          {username ? (
+            <>
+              <button
+                onClick={() => { handleLogout(); setIsOpen(false); }}
+                className="block w-full text-left py-2"
+              >
+                Đăng xuất
+              </button>
 
-    
+              <button
+                onClick={() => { navigate("/personal-info"); setIsOpen(false); }}
+                className="block w-full text-left py-2"
+              >
+                Thông tin cá nhân
+              </button>
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+              Đăng nhập/Đăng ký
+            </Link>
+          )}
 
-  </div>
-)}
+          <Link to="/employer" onClick={() => setIsOpen(false)} className="block w-full text-left py-2">
+            Cho nhà tuyển dụng
+          </Link>
+
+
+
+        </div>
+      )}
 
     </nav>
   );

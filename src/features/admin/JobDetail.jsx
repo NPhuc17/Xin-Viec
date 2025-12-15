@@ -110,16 +110,21 @@
 
 
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { variables } from "../../variables";
 
 function JobDetail() {
-  const { id } = useParams();
+  const { id } = useParams();       // jobId
   const navigate = useNavigate();
+  const location = useLocation();
+  const toCaoId = location.state?.toCaoId;
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [reason, setReason] = useState("");
+
+  const viewOnly = location.state?.viewOnly === true
+
 
   // Thông tin phụ
   const [bangCap, setBangCap] = useState("");
@@ -243,6 +248,44 @@ function JobDetail() {
     }
   };
 
+  const handleXuLyToCao = async () => {
+    if (!toCaoId) {
+      alert("Không tìm thấy ID tố cáo!");
+      return;
+    }
+
+    if (!window.confirm("Xác nhận đã xử lý tố cáo và khoá tin tuyển dụng?"))
+      return;
+
+    try {
+      const res = await fetch(
+        variables.API_URL + `ToCao/xu-ly/${toCaoId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+          },
+          body: JSON.stringify({
+            hanhDong: "Đã xử lý"
+          }),
+          credentials: "include"
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Xử lý tố cáo thất bại");
+      }
+
+      alert("Đã xử lý tố cáo và khoá tin tuyển dụng!");
+      navigate("/admin/baocao");
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
 
   if (loading) return <p className="text-center mt-6">Đang tải...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
@@ -269,7 +312,7 @@ function JobDetail() {
         <p><strong>Vị trí:</strong> {viTri || "Chưa xác định"}</p>
       </div>
 
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <textarea
           placeholder="Nhập lý do từ chối (nếu có)"
           className="w-full border rounded p-2 mb-4"
@@ -297,8 +340,56 @@ function JobDetail() {
           >
             🗑 Xóa
           </button>
+
+          <button
+            onClick={handleXuLyToCao}
+            className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+          >
+            🔒 Khoá
+          </button>
         </div>
-      </div>
+      </div> */}
+      {!viewOnly && (
+        <div className="mt-6">
+          <textarea
+            placeholder="Nhập lý do từ chối (nếu có)"
+            className="w-full border rounded p-2 mb-4"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          ></textarea>
+
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => handleApprove("approve")}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              ✅ Duyệt tin
+            </button>
+
+            <button
+              onClick={() => handleApprove("reject")}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              ❌ Từ chối
+            </button>
+
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800"
+            >
+              🗑 Xóa
+            </button>
+
+            <button
+              onClick={handleXuLyToCao}
+              className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+            >
+              🔒 Khoá
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

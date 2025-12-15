@@ -36,7 +36,7 @@ function Dashboard() {
 
         // ⭐ Chuyển dữ liệu thành dạng biểu đồ
         const quickChart = [
-          { name: "Từ ngày", value: res.data.tuNgay },
+          { name: "Từ lúc bắt đầu", value: res.data.tuNgay },
           { name: "Hôm nay", value: res.data.ngay },
           { name: "Tuần này", value: res.data.tuan },
           { name: "Tháng này", value: res.data.thang },
@@ -53,7 +53,7 @@ function Dashboard() {
 
         // ⭐ Chuẩn bị dữ liệu biểu đồ Tin nhiều nhất
         const topTinChart = [
-          { name: "Từ ngày", value: res2.data.tinNhieuNhat.tuNgay?.soLuong || 0 },
+          { name: "Từ lúc bắt đầu", value: res2.data.tinNhieuNhat.tuNgay?.soLuong || 0 },
           { name: "Hôm nay", value: res2.data.tinNhieuNhat.ngay?.soLuong || 0 },
           { name: "Tuần", value: res2.data.tinNhieuNhat.tuan?.soLuong || 0 },
           { name: "Tháng", value: res2.data.tinNhieuNhat.thang?.soLuong || 0 },
@@ -63,7 +63,7 @@ function Dashboard() {
 
         // ⭐ Chuẩn bị dữ liệu biểu đồ trạng thái
         const trangThaiChart = [
-          { name: "Từ ngày", ...convertTrangThai(res2.data.trangThai.tuNgay) },
+          { name: "Từ lúc bắt đầu", ...convertTrangThai(res2.data.trangThai.tuNgay) },
           { name: "Hôm nay", ...convertTrangThai(res2.data.trangThai.ngay) },
           { name: "Tuần", ...convertTrangThai(res2.data.trangThai.tuan) },
           { name: "Tháng", ...convertTrangThai(res2.data.trangThai.thang) },

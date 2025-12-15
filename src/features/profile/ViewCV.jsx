@@ -532,7 +532,7 @@ export default function ViewCV() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* LEFT: Avatar + Contact */}
           <div className="col-span-1 border-r pr-4  border-dashed border-secondary">
-            <div className="flex flex-col bg-highlight/70 h-full">
+            <div className="flex flex-col bg-highlight/70 h-full p-5">
               <div className="w-40 h-40 bg-gray-200 rounded-full overflow-hidden mb-4 mx-auto">
                 {cv.avata ? (
                   <img src={variables.PHOTO_URL + cv.avata} alt="avatar" className="w-full h-full object-cover" />
@@ -540,23 +540,23 @@ export default function ViewCV() {
                   <div className="w-full h-full flex items-center justify-center text-gray-500">Ảnh đại diện</div>
                 )}
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center my-3">
                 <MdDriveFileRenameOutline className="mr-2 text-accent" />
                 <p className="font-semibold">{cv.tenUngVien || "—"}</p>
               </div>
 
-              <div className="flex items-center">
+              <div className="flex items-center my-3">
                 <FaPhone className="mr-2 text-accent" />
                 <p className=" text-[14px]">{cv.phoneHoSo || "—"}</p>
               </div>
 
-              <div className="flex items-center">
+              <div className="flex items-center my-3">
                 <CiMail className="mr-2 text-accent" />
-               <p className=" text-[14px]">{cv.mailHoSo || "—"}</p>
+               <p className=" text-[14px] break-all">{cv.mailHoSo || "—"}</p>
               </div>
               
               
-              <div className="my-2">
+              <div className="my-4">
                 <strong className="p-1 pr-10 bg-accent rounded-[8px] text-white uppercase">Kỹ năng</strong>
                 <div className="h-[2px] w-full bg-accent mt-1"></div>
 
@@ -579,14 +579,14 @@ export default function ViewCV() {
               <p>{cv.hocVan || "—"}</p>
             </div>
 
-            <div className="my-4">
+            {/* <div className="my-4">
               <strong className="p-1 pr-10 bg-accent rounded-[8px] text-white uppercase">Năm kinh nghiệm</strong>
               <div className="h-[2px] w-full bg-accent mt-1"></div>
               <p>{cv.namKinhNghiemID || "—"}</p>
-            </div>
+            </div> */}
 
             <div className="my-4">
-              <strong className="p-1 pr-10 bg-accent rounded-[8px] text-white uppercase">Học vấn</strong>
+              <strong className="p-1 pr-10 bg-accent rounded-[8px] text-white uppercase">Năm kinh nghiệm</strong>
               <div className="h-[2px] w-full bg-accent mt-1"></div>
               <p>{getName(kinhNghiemList, cv.namKinhNghiemID)}</p>
             </div>
