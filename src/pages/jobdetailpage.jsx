@@ -35,6 +35,67 @@ function Jobdetailpage() {
   const [noiDung, setNoiDung] = useState("");
   const [hasReported, setHasReported] = useState(false);
 
+  const normalizeAndFormatText = (text) => {
+    if (!text) return [];
+
+    return text
+      // 🔥 xoá xuống dòng & khoảng trắng dư
+      .replace(/\s+/g, " ")
+      .trim()
+      // 🔥 xuống dòng sau dấu chấm
+      .replace(/\.\s*/g, ".\n")
+      // 🔥 tách khi gặp chữ in hoa bắt đầu câu mới
+      .replace(/([a-zà-ỹ])\s+([A-ZÀ-Ỹ])/g, "$1\n$2")
+      .split("\n")
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+  };
+
+  const formatText = (text) => {
+    if (!text) return [];
+
+    return text
+      // thêm xuống dòng sau dấu .
+      .replace(/\.\s*/g, ".\n")
+      // thêm xuống dòng trước chữ in hoa (bắt đầu câu mới)
+      .replace(/([a-zà-ỹ])\s*([A-ZÀ-Ỹ])/g, "$1\n$2")
+      .split("\n")
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+  };
+  const normalizeText = (text) => {
+    if (!text) return "";
+
+    return text
+      // xoá xuống dòng lung tung
+      .replace(/\r?\n+/g, " ")
+      // xoá khoảng trắng dư
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+const formatDescription = (text) => {
+  return normalizeText(text)
+    // chỉ xuống dòng khi . kết thúc câu thật (sau đó là chữ)
+    .replace(/\.(?=\s*[A-ZÀ-Ỹ])/g, ".\n")
+    .split("\n")
+    .map(line => line.trim())
+    .filter(line => line.length > 1); // 🔥 bỏ dòng chỉ có "."
+};
+
+  const formatRequirements = (text) => {
+    if (!text) return [];
+
+    return text
+      .replace(/\r?\n+/g, "\n") // giữ \n để tách
+      .split(/\n\s*-\s*|^-+\s*/g) // tách theo dấu -
+      .map(item =>
+        item
+          .replace(/\s+/g, " ")
+          .trim()
+      )
+      .filter(item => item.length > 0);
+  };
+
   // 1️⃣ Load chi tiết tin tuyển dụng
   useEffect(() => {
     const fetchJob = async () => {
@@ -304,7 +365,11 @@ function Jobdetailpage() {
           </div>
         </div>
 
-        <p className="text-gray-700 mb-4">{job.mieuTa || "Chưa có mô tả."}</p>
+        <div className="text-gray-700 mb-4 space-y-2">
+          {formatDescription(job.mieuTa).map((line, i) => (
+            <p key={i}>{line}</p>
+          ))}
+        </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
           <div>
@@ -336,8 +401,13 @@ function Jobdetailpage() {
           </div>
         </div>
 
-        <div>
-          <span className="font-semibold">Yêu cầu:</span> <br />{job.yeuCau}
+        <div className="mt-4">
+          <span className="font-semibold">Yêu cầu:</span>
+          <ul className="mt-2 list-disc list-inside space-y-1">
+            {formatRequirements(job.yeuCau).map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
         </div>
 
         <button

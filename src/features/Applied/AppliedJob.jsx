@@ -149,8 +149,9 @@ function AppliedJob() {
 
   return (
     <>
+     <div className="min-h-screen flex flex-col justify-between">
       <Navbar />
-      <div className="p-6 max-w-4xl mx-auto">
+      <div className="p-6">
         <h1 className="text-2xl font-bold mb-4 text-blue-700">
           Danh sách công việc đã ứng tuyển
         </h1>
@@ -191,6 +192,7 @@ function AppliedJob() {
       </div>
 
       <Footer />
+      </div>
     </>
   );
 }

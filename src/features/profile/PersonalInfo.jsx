@@ -11,7 +11,7 @@ function PersonalInfoPage() {
         ngaySinh: "",
         sdt: "",
         email: "",
-        quocGia: "",
+        quocGia: "Việt Nam",
         tinh: "",
         huyen: "",
         diaChi: "",
@@ -21,6 +21,11 @@ function PersonalInfoPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
+
+
+    const [provinces, setProvinces] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [selectedProvinceId, setSelectedProvinceId] = useState("");
 
     const token = Cookies.get("jwt_token");
 
@@ -34,7 +39,10 @@ function PersonalInfoPage() {
                 });
                 const data = await res.json();
                 if (data) {
-                    setFormData(data);
+                    setFormData({
+                        ...data,
+                        quocGia: data.quocGia || "Việt Nam",
+                    });
                     setIsEditing(true);
                 }
             } catch (err) {
@@ -46,48 +54,117 @@ function PersonalInfoPage() {
         fetchInfo();
     }, [token]);
 
+    useEffect(() => {
+        async function fetchProvinces() {
+            try {
+                const res = await fetch("https://esgoo.net/api-tinhthanh-new/1/0.htm");
+                const json = await res.json();
+                setProvinces(json.data || []);
+            } catch (err) {
+                console.error("Lỗi lấy tỉnh:", err);
+            }
+        }
+        fetchProvinces();
+    }, []);
+
+
+    useEffect(() => {
+        if (!formData.tinh || provinces.length === 0) return;
+
+        const found = provinces.find(p => p.name === formData.tinh);
+
+        if (found) {
+            setSelectedProvinceId(found.id);
+        }
+    }, [formData.tinh, provinces]);
+
+    useEffect(() => {
+        if (!selectedProvinceId) return;
+
+        async function fetchWards() {
+            try {
+                const res = await fetch(
+                    `https://esgoo.net/api-tinhthanh-new/2/${selectedProvinceId}.htm`
+                );
+                const json = await res.json();
+                setWards(json.data || []);
+            } catch (err) {
+                console.error("Lỗi lấy phường:", err);
+            }
+        }
+
+        fetchWards();
+    }, [selectedProvinceId]);
+
+
+    const handleProvinceChange = async (e) => {
+        const provinceId = e.target.value;
+        setSelectedProvinceId(provinceId);
+
+        // lưu tên tỉnh vào form
+        const province = provinces.find(p => p.id === provinceId);
+        setFormData({
+            ...formData,
+            tinh: province ? province.name : "",
+            huyen: "",
+        });
+
+        if (!provinceId) {
+            setWards([]);
+            return;
+        }
+
+        try {
+            const res = await fetch(`https://esgoo.net/api-tinhthanh-new/2/${provinceId}.htm`);
+            const json = await res.json();
+            setWards(json.data || []);
+        } catch (err) {
+            console.error("Lỗi lấy phường:", err);
+        }
+    };
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setMessage("");
 
-    const url = `${variables.API_URL}ThongTinCaNhan/${isEditing ? "update" : "create"}`;
-    const method = isEditing ? "PUT" : "POST";
+        const url = `${variables.API_URL}ThongTinCaNhan/${isEditing ? "update" : "create"}`;
+        const method = isEditing ? "PUT" : "POST";
 
-    try {
-        const res = await fetch(url, {
-            method,
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(formData),
-        });
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formData),
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (res.ok) {
-            setMessage(data.message || "Lưu thành công!");
-            setIsEditing(true);
-        } else {
-            // ----- Xử lý lỗi validation từ API -----
-            if (data.errors) {
-                const message = Object.values(data.errors).flat().join("\n");
-                alert(message);
-                setMessage(message);
+            if (res.ok) {
+                setMessage(data.message || "Lưu thành công!");
+                setIsEditing(true);
             } else {
-                alert(data.title || "Đã xảy ra lỗi!");
-                setMessage(data.title || "Đã xảy ra lỗi!");
+                // ----- Xử lý lỗi validation từ API -----
+                if (data.errors) {
+                    const message = Object.values(data.errors).flat().join("\n");
+                    alert(message);
+                    setMessage(message);
+                } else {
+                    alert(data.title || "Đã xảy ra lỗi!");
+                    setMessage(data.title || "Đã xảy ra lỗi!");
+                }
             }
+        } catch (err) {
+            setMessage("Lỗi kết nối máy chủ");
+            alert("Lỗi kết nối máy chủ");
         }
-    } catch (err) {
-        setMessage("Lỗi kết nối máy chủ");
-        alert("Lỗi kết nối máy chủ");
-    }
-};
+    };
 
 
     if (loading) return <div>Đang tải...</div>;
@@ -114,7 +191,7 @@ const handleSubmit = async (e) => {
                         />
                     </div>
 
-                    {/* Giới tính (dropdown) */}
+                    {/* Giới tính */}
                     <div>
                         <label className="block mb-1 font-medium">Giới tính</label>
                         <select
@@ -144,13 +221,69 @@ const handleSubmit = async (e) => {
                         />
                     </div>
 
-                    {/* Các trường khác */}
+                    {/* Số điện thoại */}
+                    <div>
+                        <label className="block mb-1 font-medium">Số điện thoại</label>
+                        <input
+                            type="text"
+                            name="sdt"
+                            value={formData.sdt || ""}
+                            onChange={handleChange}
+                            className="w-full border rounded-lg px-3 py-2"
+                        />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <label className="block mb-1 font-medium">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email || ""}
+                            onChange={handleChange}
+                            className="w-full border rounded-lg px-3 py-2"
+                        />
+                    </div>
+
+                    {/* Tỉnh / Thành phố */}
+                    <div>
+                        <label className="block mb-1 font-medium">Tỉnh / Thành phố</label>
+                        <select
+                            value={selectedProvinceId}
+                            onChange={handleProvinceChange}
+                            className="w-full border rounded-lg px-3 py-2 bg-white"
+                        >
+                            <option value="">-- Chọn tỉnh / thành phố --</option>
+                            {provinces.map((p) => (
+                                <option key={p.id} value={p.id}>
+                                    {p.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Phường / Xã */}
+                    <div>
+                        <label className="block mb-1 font-medium">Phường / Xã</label>
+                        <select
+                            value={formData.huyen || ""}
+                            onChange={(e) =>
+                                setFormData({ ...formData, huyen: e.target.value })
+                            }
+                            disabled={!wards.length}
+                            className="w-full border rounded-lg px-3 py-2 bg-white"
+                        >
+                            <option value="">-- Chọn phường / xã --</option>
+                            {wards.map((w) => (
+                                <option key={w.id} value={w.name}>
+                                    {w.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Các trường còn lại */}
                     {[
-                        { label: "Số điện thoại", name: "sdt" },
-                        { label: "Email", name: "email" },
-                        { label: "Quốc gia", name: "quocGia" },
-                        { label: "Tỉnh/Thành phố", name: "tinh" },
-                        { label: "Huyện/Quận", name: "huyen" },
                         { label: "Địa chỉ", name: "diaChi" },
                         { label: "CCCD", name: "cccd" },
                         { label: "Nơi sinh", name: "noiSinh" },
@@ -167,7 +300,7 @@ const handleSubmit = async (e) => {
                         </div>
                     ))}
 
-                    {/* Nút submit */}
+                    {/* Submit */}
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700"
@@ -175,6 +308,7 @@ const handleSubmit = async (e) => {
                         {isEditing ? "Cập nhật thông tin" : "Tạo thông tin"}
                     </button>
                 </form>
+
 
             </div>
 

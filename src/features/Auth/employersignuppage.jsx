@@ -231,7 +231,7 @@ function Employersignuppage() {
     phone: "",
     email: "",
     password: "",
-    ntdName: "",
+    ntdName: "Nhà tuyển dụng",
     ctID: "",
   });
 
@@ -278,7 +278,7 @@ function Employersignuppage() {
     setErrors({});
 
     try {
-      const res = await fetch(variables.API_URL + "Register/register-ntd", {
+      const res = await fetch(variables.API_URL + "Register/dang-ky-ntd", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -286,7 +286,8 @@ function Employersignuppage() {
           Sdt: form.phone,
           Mail: form.email,
           Password: form.password,
-          NtdName: form.ntdName,
+          // NtdName: form.ntdName,
+          NtdName: "Nhà tuyển dụng",
           CtID: form.ctID ? parseInt(form.ctID) : null,
         }),
       });
@@ -392,7 +393,7 @@ function Employersignuppage() {
         </div>
 
         {/* Tên NTD */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block mb-1">Tên nhà tuyển dụng</label>
           <input
             type="text"
@@ -405,10 +406,10 @@ function Employersignuppage() {
           {errors.NtdName && (
             <div className="text-red-500 text-sm mt-1">{errors.NtdName}</div>
           )}
-        </div>
+        </div> */}
 
         {/* Chọn công ty */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block mb-1">Công ty</label>
           <select
             name="ctID"
@@ -423,7 +424,7 @@ function Employersignuppage() {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         {/* Submit */}
         <button
@@ -448,3 +449,322 @@ function Employersignuppage() {
 }
 
 export default Employersignuppage;
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import { Link, useNavigate, useLocation } from "react-router-dom";
+// import { variables } from "../../variables";
+// import EmployerNavbar from "../../components/employernavbar";
+// import Footer from "../../components/footer";
+// import background from "../../assets/signup.jpg";
+
+// function Employersignuppage() {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   /* =========================
+//      STATE: TÀI KHOẢN NTD
+//   ========================== */
+//   const [form, setForm] = useState({
+//     username: "",
+//     phone: "",
+//     email: "",
+//     password: "",
+//   });
+
+//   /* =========================
+//      STATE: CÔNG TY (ĐẦY ĐỦ)
+//   ========================== */
+//   const [companyForm, setCompanyForm] = useState({
+//     ctName: "",
+//     diaChi: "",
+//     moHinh: "",
+//     maThue: "",
+//     quocGia: "",
+//     soNhanVien: "",
+//     nguoiLienHe: "",
+//     sdtLienHe: "",
+//     sdtCongTy: "",
+//     mieuTa: "",
+//     logo: "",
+//   });
+
+//   /* =========================
+//      GOOGLE LOGIN PREFILL
+//   ========================== */
+//   useEffect(() => {
+//     if (location.state) {
+//       const { email, realname } = location.state;
+//       setForm((prev) => ({
+//         ...prev,
+//         email: email || prev.email,
+//         username: realname || prev.username,
+//       }));
+//     }
+//   }, [location.state]);
+
+//   /* =========================
+//      UPLOAD LOGO
+//   ========================== */
+//   const handleUploadLogo = async (e) => {
+//     const file = e.target.files[0];
+//     if (!file) return;
+
+//     const formData = new FormData();
+//     formData.append("file", file);
+
+//     try {
+//       const res = await fetch(
+//         variables.API_URL + "CongTy/upload-logo",
+//         {
+//           method: "POST",
+//           body: formData,
+//         }
+//       );
+
+//       const data = await res.json();
+
+//       if (res.ok && data.url) {
+//         setCompanyForm((prev) => ({ ...prev, logo: data.url }));
+//         alert("Upload logo thành công!");
+//       } else {
+//         alert(data.Message || "Upload logo thất bại!");
+//       }
+//     } catch (err) {
+//       console.error(err);
+//       alert("Lỗi upload logo!");
+//     }
+//   };
+
+//   /* =========================
+//      SUBMIT FORM
+//   ========================== */
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!companyForm.ctName.trim()) {
+//       alert("Tên công ty không được để trống!");
+//       return;
+//     }
+
+//     try {
+//       /* ===== 1. TẠO CÔNG TY ===== */
+//       const resCompany = await fetch(
+//         variables.API_URL + "CongTy/add",
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({
+//             CtName: companyForm.ctName,
+//             DiaChi: companyForm.diaChi,
+//             MoHinh: companyForm.moHinh,
+//             MaThue: companyForm.maThue,
+//             QuocGia: companyForm.quocGia,
+//             SoNhanVien: companyForm.soNhanVien
+//               ? parseInt(companyForm.soNhanVien)
+//               : 1,
+//             NguoiLienHe: companyForm.nguoiLienHe,
+//             SdtLienHe: companyForm.sdtLienHe,
+//             SdtCongTy: companyForm.sdtCongTy,
+//             MieuTa: companyForm.mieuTa,
+//             Logo: companyForm.logo,
+//           }),
+//         }
+//       );
+
+//       const companyData = await resCompany.json();
+
+//       if (!resCompany.ok) {
+//         alert(companyData.Message || "Tạo công ty thất bại!");
+//         return;
+//       }
+
+//       const ctID = companyData.data?.ctId || companyData.ctId;
+//       if (!ctID) {
+//         alert("Không lấy được ID công ty!");
+//         return;
+//       }
+
+//       /* ===== 2. TẠO NHÀ TUYỂN DỤNG ===== */
+//       const resNTD = await fetch(
+//         variables.API_URL + "Register/register-ntd",
+//         {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({
+//             TkName: form.username,
+//             Sdt: form.phone,
+//             Mail: form.email,
+//             Password: form.password,
+//             NtdName: "Nhà tuyển dụng",
+//             CtID: ctID,
+//           }),
+//         }
+//       );
+
+//       const ntdData = await resNTD.json();
+
+//       if (!resNTD.ok) {
+//         alert(ntdData.Message || "Đăng ký NTD thất bại!");
+//         return;
+//       }
+
+//       alert("Đăng ký nhà tuyển dụng thành công!");
+//       navigate("/employer/login");
+//     } catch (err) {
+//       console.error(err);
+//       alert("Lỗi kết nối server!");
+//     }
+//   };
+
+//   return (
+//     <>
+//       <EmployerNavbar />
+
+//       <div
+//         style={{ backgroundImage: `url(${background})` }}
+//         className="bg-cover bg-center min-h-screen flex items-center justify-center"
+//       >
+//         <form
+//           onSubmit={handleSubmit}
+//           className="w-full max-w-3xl bg-white/80 p-6 rounded shadow"
+//         >
+//           <h2 className="text-2xl font-bold mb-4 text-center">
+//             Đăng ký Nhà tuyển dụng & Công ty
+//           </h2>
+
+//           {/* ===== TÀI KHOẢN ===== */}
+//           <h3 className="font-semibold mb-2">Thông tin tài khoản</h3>
+//           <div className="grid grid-cols-2 gap-4 mb-4">
+//             <input
+//               placeholder="Tên tài khoản"
+//               className="border p-2 rounded"
+//               value={form.username}
+//               onChange={(e) =>
+//                 setForm({ ...form, username: e.target.value })
+//               }
+//               required
+//             />
+//             <input
+//               placeholder="Số điện thoại"
+//               className="border p-2 rounded"
+//               value={form.phone}
+//               onChange={(e) =>
+//                 setForm({ ...form, phone: e.target.value })
+//               }
+//               required
+//             />
+//             <input
+//               type="email"
+//               placeholder="Email"
+//               className="border p-2 rounded col-span-2"
+//               value={form.email}
+//               onChange={(e) =>
+//                 setForm({ ...form, email: e.target.value })
+//               }
+//               required
+//             />
+//             <input
+//               type="password"
+//               placeholder="Mật khẩu"
+//               className="border p-2 rounded col-span-2"
+//               value={form.password}
+//               onChange={(e) =>
+//                 setForm({ ...form, password: e.target.value })
+//               }
+//               required
+//             />
+//           </div>
+
+//           {/* ===== CÔNG TY ===== */}
+//           <h3 className="font-semibold mb-2">Thông tin công ty</h3>
+//           <div className="grid grid-cols-2 gap-4">
+//             <input placeholder="Tên công ty *" className="border p-2 rounded col-span-2"
+//               value={companyForm.ctName}
+//               onChange={(e) => setCompanyForm({ ...companyForm, ctName: e.target.value })}
+//               required
+//             />
+//             <input placeholder="Địa chỉ" className="border p-2 rounded"
+//               value={companyForm.diaChi}
+//               onChange={(e) => setCompanyForm({ ...companyForm, diaChi: e.target.value })}
+//             />
+//             <input placeholder="Quốc gia" className="border p-2 rounded"
+//               value={companyForm.quocGia}
+//               onChange={(e) => setCompanyForm({ ...companyForm, quocGia: e.target.value })}
+//             />
+//             <input placeholder="Mô hình công ty" className="border p-2 rounded"
+//               value={companyForm.moHinh}
+//               onChange={(e) => setCompanyForm({ ...companyForm, moHinh: e.target.value })}
+//             />
+//             <input placeholder="Mã thuế" className="border p-2 rounded"
+//               value={companyForm.maThue}
+//               onChange={(e) => setCompanyForm({ ...companyForm, maThue: e.target.value })}
+//             />
+//             <input placeholder="Số nhân viên" type="number" className="border p-2 rounded"
+//               value={companyForm.soNhanVien}
+//               onChange={(e) => setCompanyForm({ ...companyForm, soNhanVien: e.target.value })}
+//             />
+//             <input placeholder="Người liên hệ" className="border p-2 rounded"
+//               value={companyForm.nguoiLienHe}
+//               onChange={(e) => setCompanyForm({ ...companyForm, nguoiLienHe: e.target.value })}
+//             />
+//             <input placeholder="SĐT liên hệ" className="border p-2 rounded"
+//               value={companyForm.sdtLienHe}
+//               onChange={(e) => setCompanyForm({ ...companyForm, sdtLienHe: e.target.value })}
+//             />
+//             <input placeholder="SĐT công ty" className="border p-2 rounded col-span-2"
+//               value={companyForm.sdtCongTy}
+//               onChange={(e) => setCompanyForm({ ...companyForm, sdtCongTy: e.target.value })}
+//             />
+
+//             {/* LOGO */}
+//             <div className="col-span-2">
+//               <label className="font-medium">Logo công ty</label>
+//               <input type="file" accept="image/*" onChange={handleUploadLogo} />
+//               {companyForm.logo && (
+//                 <img
+//                   src={`${variables.API_URL}CongTy/logo/${companyForm.logo.split("/").pop()}`}
+//                   alt="logo"
+//                   className="w-24 h-24 mt-2 object-contain"
+//                 />
+//               )}
+//             </div>
+
+//             <textarea
+//               placeholder="Miêu tả công ty"
+//               rows="3"
+//               className="border p-2 rounded col-span-2"
+//               value={companyForm.mieuTa}
+//               onChange={(e) => setCompanyForm({ ...companyForm, mieuTa: e.target.value })}
+//             />
+//           </div>
+
+//           <button
+//             type="submit"
+//             className="w-full mt-6 bg-primary text-white py-2 rounded hover:bg-blue-700"
+//           >
+//             Đăng ký
+//           </button>
+
+//           <div className="mt-4 text-center">
+//             Đã có tài khoản?{" "}
+//             <Link to="/employer/login" className="text-accent underline">
+//               Đăng nhập
+//             </Link>
+//           </div>
+//         </form>
+//       </div>
+
+//       <Footer />
+//     </>
+//   );
+// }
+
+// export default Employersignuppage;
+

@@ -605,11 +605,11 @@ function SignupPage() {
     uvname: "",
     ngaysinh: "",
     quocgia: "",
-    linhvucID: "",
+    linhvucID: 1,
   });
 
   const [errors, setErrors] = useState({});
-  const [linhvucs, setLinhvucs] = useState([]);
+  // const [linhvucs, setLinhvucs] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -626,18 +626,18 @@ function SignupPage() {
   }, [location.state]);
 
   // 🔹 Lấy danh sách lĩnh vực
-  useEffect(() => {
-    const fetchLinhVucs = async () => {
-      try {
-        const res = await fetch(variables.API_URL + "LinhVuc/list");
-        const data = await res.json();
-        setLinhvucs(data.Data || data.data || []);
-      } catch (err) {
-        console.error("Lỗi tải lĩnh vực:", err);
-      }
-    };
-    fetchLinhVucs();
-  }, []);
+  // useEffect(() => {
+  //   const fetchLinhVucs = async () => {
+  //     try {
+  //       const res = await fetch(variables.API_URL + "LinhVuc/list");
+  //       const data = await res.json();
+  //       setLinhvucs(data.Data || data.data || []);
+  //     } catch (err) {
+  //       console.error("Lỗi tải lĩnh vực:", err);
+  //     }
+  //   };
+  //   fetchLinhVucs();
+  // }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -804,7 +804,7 @@ function SignupPage() {
         </div> */}
 
         {/* Lĩnh vực */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block mb-1">Lĩnh vực</label>
           <select
             name="linhvucID"
@@ -824,7 +824,7 @@ function SignupPage() {
           {errors.LinhvucID && (
             <div className="text-red-500 text-sm mt-1">{errors.LinhvucID}</div>
           )}
-        </div>
+        </div> */}
 
         {/* Submit */}
         <button
