@@ -83,7 +83,7 @@ function EmployerNavbar() {
         </div>
 
         <Link to="/employer/company" className="text-white hover:text-highlight">
-          Khai báo công ty
+          Thông tin công ty
         </Link>
 
         <NotificationBell logoutSignal={username === ''} />
@@ -132,7 +132,7 @@ function EmployerNavbar() {
           </Link>
 
           <Link to="/employer/company" onClick={() => setIsOpen(false)} className="block py-2">
-            Khai báo công ty
+            Thông tin công ty
           </Link>
 
           {username ? (

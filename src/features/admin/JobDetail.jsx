@@ -133,6 +133,42 @@ function JobDetail() {
   const [loaiHinh, setLoaiHinh] = useState("");
   const [viTri, setViTri] = useState("");
 
+
+  // Chuẩn hoá text bị vỡ do copy PDF / Word
+const normalizeText = (text) => {
+  if (!text) return "";
+  return text
+    .replace(/\r?\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+// Format mô tả: đoạn văn, xuống dòng theo dấu .
+const formatDescription = (text) => {
+  return normalizeText(text)
+    // chỉ xuống dòng khi . kết thúc câu thật (sau đó là chữ)
+    .replace(/\.(?=\s*[A-ZÀ-Ỹ])/g, ".\n")
+    .split("\n")
+    .map(line => line.trim())
+    .filter(line => line.length > 1); // 🔥 bỏ dòng chỉ có "."
+};
+
+// Format yêu cầu: danh sách gạch đầu dòng
+const formatRequirements = (text) => {
+  if (!text) return [];
+
+  return text
+    .replace(/\r?\n+/g, "\n")
+    .split(/\n\s*-\s*|^-+\s*/g)
+    .map(item =>
+      item
+        .replace(/\s+/g, " ")
+        .trim()
+    )
+    .filter(item => item.length > 0);
+};
+
+
   useEffect(() => {
     const fetchJob = async () => {
       try {
@@ -297,9 +333,22 @@ function JobDetail() {
 
       <div className="space-y-2">
         <p><strong>Tiêu đề:</strong> {job.tieuDe}</p>
-        <p><strong>Mô tả:</strong> {job.mieuTa}</p>
+        <div className="">
+  <strong>Mô tả:</strong>
+  {formatDescription(job.mieuTa).map((line, i) => (
+    <p key={i}>{line}</p>
+  ))}
+</div>
         <p><strong>Trạng thái:</strong> {job.trangThai}</p>
-        <p><strong>Yêu cầu:</strong> {job.yeuCau}</p>
+        {/* <p><strong>Yêu cầu:</strong> {job.yeuCau}</p> */}
+        <div className="">
+  <span className="font-semibold">Yêu cầu:</span>
+  <ul className="mt-2 list-disc list-inside space-y-1">
+    {formatRequirements(job.yeuCau).map((item, i) => (
+      <li key={i}>{item}</li>
+    ))}
+  </ul>
+</div>
         <p><strong>Tuổi:</strong> {job.tuoi}</p>
         <p><strong>Ngày đăng:</strong> {job.ngayDang?.slice(0, 10)}</p>
         <p><strong>Hạn nộp:</strong> {job.hanNop?.slice(0, 10)}</p>

@@ -42,40 +42,44 @@ export default function Recommend() {
 
   return (
     <>
-    <div className="min-h-screen flex flex-col justify-between">
-      <Navbar />
+      <div className="min-h-screen flex flex-col justify-between">
+        <Navbar />
 
-      <div className="container mt-4 mb-5">
+        <div className=" mt-4 mb-5">
+          <h1 className="text-2xl font-bold mb-4 text-blue-700">
+            Danh sách công việc gợi ý
+          </h1>
 
+          {loading ? (
+            <p>Đang tải...</p>
+          ) : list.length === 0 ? (
+            <p>Không có gợi ý phù hợp.</p>
+          ) : (
 
-        {loading ? (
-          <p>Đang tải...</p>
-        ) : list.length === 0 ? (
-          <p>Không có gợi ý phù hợp.</p>
-        ) : (
-          <div className="row mx-4">
-            {list.map((item) => (
-              <div
-                key={item.tinId}
-                onClick={() => handleClick(item.tinId)}
-                className="border border-accent rounded-md p-4 bg-white shadow-sm hover:border-highlight hover:shadow-md transition cursor-pointer mb-3"
-              >
-                <p className="text-lg font-semibold text-gray-800 mb-1">{item.tieuDe}</p>
-                <p className="text-gray-600 text-sm mb-1">{item.congTy}</p>
-                <p className="text-gray-500 text-sm">
-                  Ngày đăng: <b>{item.ngayDang}</b> | Hạn nộp: <b>{item.hanNop}</b>
-                </p>
-                <p className="mt-1 text-sm">
+            <div className="row mx-4">
+
+              {list.map((item) => (
+                <div
+                  key={item.tinId}
+                  onClick={() => handleClick(item.tinId)}
+                  className="border border-accent rounded-md p-4 bg-white shadow-sm hover:border-highlight hover:shadow-md transition cursor-pointer mb-3"
+                >
+                  <p className="text-lg font-semibold text-gray-800 mb-1">{item.tieuDe}</p>
+                  {/* <p className="text-gray-600 text-sm mb-1">{item.congTy}</p> */}
+                  <p className="text-gray-500 text-sm">
+                    Ngày đăng: <b>{item.ngayDang}</b> | Hạn nộp: <b>{item.hanNop}</b>
+                  </p>
+                  {/* <p className="mt-1 text-sm">
                   Mức độ phù hợp: <b className="text-green-600">{item.phuHop}%</b>
-                </p>
-              </div>
+                </p> */}
+                </div>
 
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-      <Footer />
+        <Footer />
       </div>
     </>
   );

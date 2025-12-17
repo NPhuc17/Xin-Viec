@@ -221,6 +221,16 @@ function CompanyPostJob() {
                     setModalMsg(data.title || "Đăng tin thất bại!");
                 }
 
+                if (
+                    data.message &&
+                    data.message.includes("kê khai đầy đủ thông tin công ty")
+                ) {
+                    setModalMsg(data.message);
+                    setModalType("need_company");
+                    setShowModal(true);
+                    return;
+                }
+
                 setModalType("error");
                 setShowModal(true);
                 return;
@@ -362,26 +372,43 @@ function CompanyPostJob() {
 
                 {showModal && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                        <div className="bg-white p-6 rounded shadow-lg">
+                        <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
                             <p
-                                className={`text-lg mb-4 ${modalType === "error"
-                                    ? "text-red-600"
-                                    : modalType === "success"
-                                        ? "text-green-600"
-                                        : "text-gray-700"
+                                className={`text-lg mb-6 ${modalType === "error"
+                                        ? "text-red-600"
+                                        : modalType === "success"
+                                            ? "text-green-600"
+                                            : "text-blue-600"
                                     }`}
                             >
                                 {modalMsg}
                             </p>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="bg-blue-600 text-white px-4 py-2 rounded"
-                            >
-                                Đóng
-                            </button>
+
+                            <div className="flex justify-end gap-3">
+                                {/* Trường hợp cần kê khai công ty */}
+                                {modalType === "need_company" && (
+                                    <button
+                                        onClick={() => {
+                                            setShowModal(false);
+                                            navigate("/employer/company"); // 👈 chuyển trang
+                                        }}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded"
+                                    >
+                                        Cập nhật công ty
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    className="bg-gray-300 px-4 py-2 rounded"
+                                >
+                                    Đóng
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
+
             </div>
             <Footer />
         </>
